@@ -1,0 +1,17 @@
+== About xc-convert 
+
+_xc-convert_ is a simple tool to convert Nokia OSS system generated XML files to CSV (Comma Seperated Values) files and vice versa.  
+
+_xc-convert_ is developed by mailto:fnoyanisi@yahoo.com[Fehmi Noyan ISI]
+
+== Version History
+
+* *version 0.1 - (Aug 2017)*	
+** Initial alpha version
+
+== License
+
+_xc-convert_ can be distributed, modified and used under the terms of 2-clause BSD license (FreeBSD license). 
+
+Fehmi Noyan ISI
+mailto:fnoyanisi@yahoo.com[fnoyanisi@yahoo.com] 
