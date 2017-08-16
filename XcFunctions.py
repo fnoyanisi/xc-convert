@@ -134,7 +134,7 @@ def convertXmlToCsv(xml_doc, csv_path, header_dict):
                         # write into the CSV file
                         writer.writerow(parameter_dict)
 
-        except EnvironmentError:
+        except OSError:
                 raise
 
 def examineCsvFormat(csv_file):
@@ -146,8 +146,11 @@ def examineCsvFormat(csv_file):
     """
 
     header=''
-    with open(csv_file) as csvfile:
-        header = csvfile.readline()
+    try:
+        with open(csv_file) as csvfile:
+            header = csvfile.readline()
+    except OSError:
+        return False
 
     if len(header) == 0:
         return False
@@ -162,8 +165,8 @@ def examineCsvFormat(csv_file):
     else:
         csv_values = header.split(',')
 
-    # make sure csv_values is no shorter than test_values
-    # and the CSV file has all teh necessary fields in it
+    # make sure csv_values is not shorter than test_values
+    # and the CSV file has all the necessary fields in it
     if len(csv_values) < len(test_values) or test_values != csv_values[:len(test_values)]:
         return False
 
@@ -182,56 +185,41 @@ def convertCsv2Xml(csv_file, xml_file):
     now = datetime.datetime.now()
     timestamp = now.strftime('%Y-%m-%dT%H:%M:%S')
 
-    # try opening the CSV file for reading
-    # if the attempt fails, pass the execption to the caller
+    # try opening the XML file for writing and the CSV file
+    # for reading.
     # the caller should handle the exception
-    try:
-        csvfile = open(csv_file,'r')
-    except OSError:
-        raise
+    with open(xml_file,'w') as xmlfile, open(csv_file,'r') as csvfile:
 
-    # try opening the XML file for writing
-    # if the attempt fails, pass the execption to the caller
-    # the caller should handle the exception
-    try:
-        xmlfile = open(xml_file,'w')
-    except OSError:
-        raise
+        # write standard XML information at the top
+        xmlfile.write('<?xml version="1.0" encoding="UTF-8"?>\n')
+        xmlfile.write('<!DOCTYPE raml SYSTEM \'raml20.dtd\'>\n')
+        xmlfile.write('<raml version="2.0" xmlns="raml20.xsd">\n')
+        xmlfile.write('\t<cmData type="actual">\n')
+        xmlfile.write('\t'*2 + '<header>\n')
+        xmlfile.write('\t'*3 + '<log dateTime="' + timestamp +'" action="created" appInfo="ActualExporter">InternalValues are used</log>\n')
+        xmlfile.write('\t'*2 + '</header>\n')
 
-    # with open(xml_file,'w') as xmlfile:
-    # write standard XML information at the top
-    xmlfile.write('<?xml version="1.0" encoding="UTF-8"?>\n')
-    xmlfile.write('<!DOCTYPE raml SYSTEM \'raml20.dtd\'>\n')
-    xmlfile.write('<raml version="2.0" xmlns="raml20.xsd">\n')
-    xmlfile.write('\t<cmData type="actual">\n')
-    xmlfile.write('\t'*2 + '<header>\n')
-    xmlfile.write('\t'*3 + '<log dateTime="' + timestamp +'" action="created" appInfo="ActualExporter">InternalValues are used</log>\n')
-    xmlfile.write('\t'*2 + '</header>\n')
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            # the Managed Object node is of the form
+            # <managedObject class="MRBTS" version="FL16" distName="PLMN-PLMN/MRBTS-1111/LNBTS-1111" id="1111111">
+            mo_line = '\t'*2 + '<managedObject class="' + row['class'] + '" version="' + row['version'] +'" distName="' + row['distName'] + '" id="' + row['id'] + '">\n'
+            xmlfile.write(mo_line)
 
-    reader = csv.DictReader(csvfile)
-    for row in reader:
-        # the Managed Object node is of the form
-        # <managedObject class="MRBTS" version="FL16" distName="PLMN-PLMN/MRBTS-1111/LNBTS-1111" id="1111111">
-        mo_line = '\t'*2 + '<managedObject class="' + row['class'] + '" version="' + row['version'] +'" distName="' + row['distName'] + '" id="' + row['id'] + '">\n'
-        xmlfile.write(mo_line)
+            # rest of the parameters
+            for parameter_name in row:
+                if not parameter_name in mo_attributes:
+                    if '{}' in parameter_name:
+                        # a list
+                        xmlfile.write('\t'*3 + '<list name="' + re.sub('{}','',parameter_name) + '">\n')
+                        HelperFunctions.listCsv2Xml(row[parameter_name], xmlfile)
+                        xmlfile.write('\t'*3 + '</list>\n')
+                    else:
+                        # formal <p..> .. </p>
+                        xmlfile.write('\t'*3 + '<p name="' + parameter_name + '">' + row[parameter_name] + '</p>\n')
 
-        # rest of the parameters
-        for parameter_name in row:
-            if not parameter_name in mo_attributes:
-                if '{}' in parameter_name:
-                    # a list
-                    xmlfile.write('\t'*3 + '<list name="' + re.sub('{}','',parameter_name) + '">\n')
-                    HelperFunctions.listCsv2Xml(row[parameter_name], xmlfile)
-                    xmlfile.write('\t'*3 + '</list>\n')
-                else:
-                    # formal <p..> .. </p>
-                    xmlfile.write('\t'*3 + '<p name="' + parameter_name + '">' + row[parameter_name] + '</p>\n')
+            xmlfile.write('\t'*2 + '</managedObject>\n')
 
-        xmlfile.write('\t'*2 + '</managedObject>\n')
-
-    # standard XML information
-    xmlfile.write('\t</cmData>\n')
-    xmlfile.write('</raml>\n')
-
-    xmlfile.close()
-    csvfile.close()
+        # standard XML information
+        xmlfile.write('\t</cmData>\n')
+        xmlfile.write('</raml>\n')

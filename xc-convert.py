@@ -1,3 +1,4 @@
+# This file is used to test the library code
 from xml.dom import minidom
 from XcFunctions import *
 import os
