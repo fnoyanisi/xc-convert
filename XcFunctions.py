@@ -80,6 +80,7 @@ def convertXmlToCsv(xml_doc, csv_path, header_dict):
     This function converts an XML file to one or several CSV files
     depending on the number of managedObject classes in the XML file.
 
+    :rtype: object
     :param xml_doc: a valid XML document object returned by minidom.parse()
     :param csv_path: path to output CSV file
     :param header_dict: a dictionary retrned by createManagedObjectDict()
