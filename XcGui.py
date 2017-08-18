@@ -34,11 +34,11 @@ class XcGuiApplication():
         label2.grid(row=1, column=0, sticky=W)
 
         # Operation Selections
-        selection = StringVar()
-        opt1 = Radiobutton(top, text='XML to CSV Conversion', variable=selection, value='x2c', command=self.OptSelection)
+        self.selection = StringVar()
+        opt1 = Radiobutton(top, text='XML to CSV Conversion', variable=self.selection, value='x2c', command=self.OptSelection)
         opt1.grid(row=2, column=0)
 
-        opt2 = Radiobutton(top, text='CSV to XML Conversion', variable=selection, value='c2x', command=self.OptSelection)
+        opt2 = Radiobutton(top, text='CSV to XML Conversion', variable=self.selection, value='c2x', command=self.OptSelection)
         opt2.grid(row=3, column=0)
 
         button_run = Button(top, text='    Run    ', command=self.FileChooser)
@@ -48,8 +48,8 @@ class XcGuiApplication():
         button_fc.grid(row=0, column=1, sticky=W + E, padx=5, pady=5)
 
         label3_text = 'No file selected'
-        label3 = Label(top, text=label3_text)
-        label3.grid(row=1, column=1)
+        self.label3 = Label(top, text=label3_text)
+        self.label3.grid(row=1, column=1)
 
         button_dc = Button(top, text='Select output directory', command=self.DirChooser)
         button_dc.grid(row=2, column=1, sticky=W + E + N + S, padx=5, pady=5)
