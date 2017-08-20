@@ -1,3 +1,4 @@
+from pathlib import PurePath
 from xml.dom import minidom
 import HelperFunctions
 import csv, re, datetime
@@ -80,7 +81,6 @@ def convertXmlToCsv(xml_doc, csv_path, header_dict):
     This function converts an XML file to one or several CSV files
     depending on the number of managedObject classes in the XML file.
 
-    :rtype: object
     :param xml_doc: a valid XML document object returned by minidom.parse()
     :param csv_path: path to output CSV file
     :param header_dict: a dictionary retrned by createManagedObjectDict()
@@ -91,7 +91,7 @@ def convertXmlToCsv(xml_doc, csv_path, header_dict):
     # header_dict -> 'managedObject class' : [list of available parameters]
     for mo_class in header_dict:
         #full path for the CSV file
-        csvfile_name = csv_path + mo_class + '.csv'
+        path_to_csv_file = PurePath(csv_path, mo_class + '.csv')
 
         # a header for the CSV file
         # add some additional attributes from managedObject node
@@ -103,40 +103,36 @@ def convertXmlToCsv(xml_doc, csv_path, header_dict):
         csv_header.insert(3,'id')
 
         # Open the CSV file and write the data in it
-        try:
-            with open(csvfile_name, 'w') as csvfile:
-                writer = csv.DictWriter(csvfile, fieldnames=csv_header, restval='#N/A')
+        with open(path_to_csv_file, 'w') as csvfile:
+            writer = csv.DictWriter(csvfile, fieldnames=csv_header, restval='#N/A')
 
-                writer.writeheader()
+            writer.writeheader()
 
-                for mo in mo_list:
-                    if mo.getAttribute("class") == mo_class:
-                        parameter_dict = {}
+            for mo in mo_list:
+                if mo.getAttribute("class") == mo_class:
+                    parameter_dict = {}
 
-                        # attributes for mamangedObject
-                        parameter_dict['class']=mo_class
-                        parameter_dict['version'] = mo.getAttribute("version")
-                        parameter_dict['distName'] = mo.getAttribute("distName")
-                        parameter_dict['id'] = mo.getAttribute("id")
+                    # attributes for mamangedObject
+                    parameter_dict['class']=mo_class
+                    parameter_dict['version'] = mo.getAttribute("version")
+                    parameter_dict['distName'] = mo.getAttribute("distName")
+                    parameter_dict['id'] = mo.getAttribute("id")
 
-                        # rest of the parameters
-                        for p in mo.childNodes:
-                            if p.nodeName == 'p':
-                                parameter_name = p.getAttribute("name")
-                                parameter_value = p.firstChild.data
-                                parameter_dict[parameter_name] = parameter_value
-                            elif p.nodeName == 'list':
-                                t=()
-                                t = HelperFunctions.listXml2Csv(p)
-                                parameter_dict[t[0]] = t[1]
-                            else:
-                                pass
+                    # rest of the parameters
+                    for p in mo.childNodes:
+                        if p.nodeName == 'p':
+                            parameter_name = p.getAttribute("name")
+                            parameter_value = p.firstChild.data
+                            parameter_dict[parameter_name] = parameter_value
+                        elif p.nodeName == 'list':
+                            t=()
+                            t = HelperFunctions.listXml2Csv(p)
+                            parameter_dict[t[0]] = t[1]
+                        else:
+                            pass
 
-                        # write into the CSV file
-                        writer.writerow(parameter_dict)
-
-        except OSError:
-                raise
+                    # write into the CSV file
+                    writer.writerow(parameter_dict)
 
 def examineCsvFormat(csv_file):
     """

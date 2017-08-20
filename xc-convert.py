@@ -1,10 +1,14 @@
 # This file is used to test the library code
-from XcFunctions import *
+from XcGui import *
 
 if __name__ == '__main__':
 
-    doc = minidom.parse("test/LNCEL_short.xml")
+    root = Tk()
+    xc_gui = XcGuiApplication(root)
+    root.mainloop()
 
+
+"""
     if examineXmlFormat(doc):
         l = createManagedObjectDict(doc)
 
@@ -17,3 +21,5 @@ if __name__ == '__main__':
         convertCsv2Xml("test/MRBTS.csv","test/MRBTS_custom.xml")
     else:
         print("not done - csv to xml")
+        
+"""

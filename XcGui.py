@@ -18,14 +18,17 @@ GUI Layout for xc-converter
     +-----------------------------------------------+
 """
 from tkinter import *
-from tkinter import filedialog
-from tkinter import messagebox
+from tkinter import filedialog, messagebox
 from pathlib import PurePath
+from XcFunctions import *
+import datetime
 
 class XcGuiApplication:
     """ GUI layout for xc-convert application """
+
+    # Initialize the GUI
     def __init__(self, top):
-        self.version = 'v0.1'
+        self.version = 'v0.2'
         self.in_file = None
         self.out_dir = None
         self.operation = None
@@ -76,21 +79,26 @@ class XcGuiApplication:
         self.label4 = Label(top, text=label4_text)
         self.label4.grid(row=3, column=1)
 
+    # The selection result from opt1 and opt2 radio buttons
+    # Determines the type of file coversion to be done, XML to CSV ot CSV to XML
     def SetSelection(self):
         self.operation = self.selection.get()
 
+    # File chooser for the input file
     def FileChooserDialog(self):
         f = filedialog.askopenfilename()
         if len(f) != 0:
             self.label3.config(text=PurePath(f).name)
             self.in_file = f
 
+    # Directory choose for the destination location
     def DirChooserDialog(self):
         d = filedialog.askdirectory()
         if len(d) != 0:
             self.label4.config(text=PurePath(d).name)
             self.out_dir = d
 
+    # Displays the license information
     def AboutDialog(self):
         about_dialog = Toplevel(self.top)
         about_dialog.wm_title('About xc-converter ' + self.version)
@@ -121,10 +129,60 @@ class XcGuiApplication:
         exit_button = Button(about_dialog, text = 'Close', command=about_dialog.destroy)
         exit_button.grid(row=3, sticky=N + S, padx=0, pady=10)
 
+    # Performs the file conversion operation
     def Run(self):
-        pass
+        if not (self.in_file and self.out_dir and self.operation):
+            msg = 'Please make sure you have\n' \
+                   '  * Selected the type of operation\n' \
+                   '  * Located the input file\n'\
+                   '  * Chosen the output directory\n'
+            messagebox.showwarning("Missing Information",msg)
+            return
 
+        # we got two types of operations; either x2c or c2x for XML to CSV and CSV to XML, respectively
+        if self.operation == 'x2c':
+        # XML to CSV Conversion
 
-root = Tk()
-xc_gui = XcGuiApplication(root)
-root.mainloop()
+            # Use DOM
+            doc = minidom.parse(self.in_file)
+
+            # Check XML file format
+            if not examineXmlFormat(doc):
+                messagebox.showerror('Unsupported XML file format!')
+                return
+
+            # Create a header dictionary
+            header_dictionary = createManagedObjectDict(doc)
+            if len(header_dictionary) == 0:
+                messagebox.showerror('Error while processing the XML file!')
+                return
+
+            # Convert the file
+            try:
+                convertXmlToCsv(doc, self.out_dir, header_dictionary)
+            except OSError:
+                messagebox.showerror('IO Error : Cannot convert the XML file!')
+                return
+
+        elif self.operation == 'c2x':
+            # CSV to XML Conversion
+
+            # Check CSV file format
+            if not examineCsvFormat(self.in_file):
+                messagebox.showerror('Unsupported CSV file format!')
+                return
+
+            # Convert the file
+            now = datetime.datetime.now()
+            timestamp = now.strftime('%Y-%m-%d-T%H-%M-%S')
+            out_file_name = PurePath(self.in_file).name + timestamp + '.xml'
+            try:
+                convertCsv2Xml(self.in_file, PurePath(self.out_dir, out_file_name))
+            except OSError:
+                messagebox.showerror('IO Error : Cannot convert the CSV file!')
+                return
+        else:
+            # never reached
+            return
+
+        messagebox.showinfo("Done","File conversion has been completed!")
