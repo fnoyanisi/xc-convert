@@ -3,6 +3,9 @@ from xml.dom import minidom
 import HelperFunctions
 import csv, re, datetime
 
+# This is the string to be used if a parameter is missing for the current managedObject
+rest_val_str = '#N/A'
+
 def examineXmlFormat(xml_doc):
     """
     This function checks whether the inout XML file has a supported file format.
@@ -104,7 +107,7 @@ def convertXmlToCsv(xml_doc, csv_path, header_dict):
 
         # Open the CSV file and write the data in it
         with open(path_to_csv_file, 'w') as csvfile:
-            writer = csv.DictWriter(csvfile, fieldnames=csv_header, restval='#N/A')
+            writer = csv.DictWriter(csvfile, fieldnames=csv_header, restval=rest_val_str)
 
             writer.writeheader()
 
@@ -211,6 +214,9 @@ def convertCsv2Xml(csv_file, xml_file):
                         xmlfile.write('\t'*3 + '<list name="' + re.sub('{}','',parameter_name) + '">\n')
                         HelperFunctions.listCsv2Xml(row[parameter_name], xmlfile)
                         xmlfile.write('\t'*3 + '</list>\n')
+                    elif row[parameter_name] == rest_val_str:
+                        # This parameter is not available for this managedObject
+                        continue
                     else:
                         # formal <p..> .. </p>
                         xmlfile.write('\t'*3 + '<p name="' + parameter_name + '">' + row[parameter_name] + '</p>\n')
