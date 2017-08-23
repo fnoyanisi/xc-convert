@@ -9,4 +9,4 @@ test/
 *.xml
 
 # IDE files
-.idea
+.idea/
