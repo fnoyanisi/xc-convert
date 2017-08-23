@@ -175,7 +175,7 @@ class XcGuiApplication:
             # Convert the file
             now = datetime.datetime.now()
             timestamp = now.strftime('%Y-%m-%d-T%H-%M-%S')
-            out_file_name = PurePath(self.in_file).name + timestamp + '.xml'
+            out_file_name = re.sub('.csv','',PurePath(self.in_file).name) + '-' + timestamp + '.xml'
             try:
                 convertCsv2Xml(self.in_file, PurePath(self.out_dir, out_file_name))
             except OSError:

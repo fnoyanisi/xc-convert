@@ -106,7 +106,7 @@ def convertXmlToCsv(xml_doc, csv_path, header_dict):
         csv_header.insert(3,'id')
 
         # Open the CSV file and write the data in it
-        with open(path_to_csv_file, 'w') as csvfile:
+        with open(path_to_csv_file, 'w', newline='') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=csv_header, restval=rest_val_str)
 
             writer.writeheader()
