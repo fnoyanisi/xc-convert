@@ -209,14 +209,14 @@ def convertCsv2Xml(csv_file, xml_file):
             # rest of the parameters
             for parameter_name in row:
                 if not parameter_name in mo_attributes:
-                    if '{}' in parameter_name:
+                    if row[parameter_name] == rest_val_str:
+                        # This parameter is not available for this managedObject
+                        continue
+                    elif '{}' in parameter_name:
                         # a list
                         xmlfile.write('\t'*3 + '<list name="' + re.sub('{}','',parameter_name) + '">\n')
                         HelperFunctions.listCsv2Xml(row[parameter_name], xmlfile)
                         xmlfile.write('\t'*3 + '</list>\n')
-                    elif row[parameter_name] == rest_val_str:
-                        # This parameter is not available for this managedObject
-                        continue
                     else:
                         # formal <p..> .. </p>
                         xmlfile.write('\t'*3 + '<p name="' + parameter_name + '">' + row[parameter_name] + '</p>\n')
