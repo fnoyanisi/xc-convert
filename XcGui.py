@@ -1,21 +1,5 @@
 """
 GUI Layout for xc-converter
-
-    +-----------------------+-----------------------+
-    |       label           |         button        |
-    +-----------------------+-----------------------+
-    |       label           |         label         |
-    +-----------------------+-----------------------+
-    |    radio_button       |         button        |
-    +-----------------------+-----------------------+
-    |    radio_button       |         label         |
-    +-----------------------+-----------------------+
-    |                    button                     |
-    +-----------------------------------------------+
-    |                    button                     |
-    +-----------------------------------------------+
-    |                    button                     |
-    +-----------------------------------------------+
 """
 from tkinter import *
 from tkinter import filedialog, messagebox
@@ -23,12 +7,13 @@ from pathlib import PurePath
 from XcFunctions import *
 import datetime
 
+
 class XcGuiApplication:
     """ GUI layout for xc-convert application """
 
     # Initialize the GUI
     def __init__(self, top):
-        self.version = 'v0.2'
+        self.version = 'v0.3'
         self.in_file = None
         self.out_dir = None
         self.operation = None
@@ -36,48 +21,46 @@ class XcGuiApplication:
         self.top = top
         top.wm_title('xc-converter ' + self.version)
         top.resizable(width=False, height=False)
-        top.geometry('{}x{}'.format(400, 280))
+        # top.geometry('{}x{}'.format(400, 280))
 
-        label1 = Label(top, text='Xml to Csv Converter ' + self.version, font="bold")
-        label1.grid(row=0, column=0, sticky=W + E + N + S, padx=5, pady=10)
+        # Logo & Header
+        self.logo_frame = Frame(top)
+        self.logo_frame.grid(row=0, column=0, padx=4, pady=5)
 
-        label2_text = 'Please select\n' \
-                      '    * The type of operation\n' \
-                      '    * The input file\n' \
-                      '    * The output directory '
-        label2 = Label(top, text=label2_text, justify=LEFT)
-        label2.grid(row=1, column=0, sticky=W)
+        self.img_xml = PhotoImage(file='img_xml.gif')
+        self.img_csv = PhotoImage(file='img_csv.gif')
+        Label(self.logo_frame, image=self.img_xml).grid(row=0, column=0, sticky='ne')
+        Label(self.logo_frame, image=self.img_csv).grid(row=0, column=1, sticky='nw')
+        Label(self.logo_frame, text='Xml to Csv Converter ' + self.version, font=('bold')).grid(row=1, column=0,
+                                                                                                columnspan=2)
+        Label(self.logo_frame, text=('Simple file format conversion utility for Nokia OSS configration files.\n\n'
+                                     'Please see the "About" section for the license information.')
+              , wraplength=200, justify=LEFT).grid(row=2, column=0, columnspan=2)
 
-        # Operation Selections
+        # Conversion type, input file, output folder selection
+        self.config_frame = Frame(top)
+        self.config_frame.grid(row=0, column=1, padx=4, pady=5)
+
         self.selection = StringVar()
-        opt1 = Radiobutton(top, text='XML to CSV Conversion', variable=self.selection, value='x2c', command=self.SetSelection)
-        opt1.grid(row=2, column=0)
+        Label(self.config_frame, text='Convert the input file from').pack()
+        Radiobutton(self.config_frame, text='XML to CSV', variable=self.selection, value='x2c',
+                    command=self.SetSelection).pack()
+        Radiobutton(self.config_frame, text='CSV to XML', variable=self.selection, value='c2x',
+                    command=self.SetSelection).pack()
 
-        opt2 = Radiobutton(top, text='CSV to XML Conversion', variable=self.selection, value='c2x', command=self.SetSelection)
-        opt2.grid(row=3, column=0)
+        Button(self.config_frame, text='Select the input file', command=self.FileChooserDialog, width=25).pack()
+        self.in_file_label = Label(self.config_frame, text='No file selected').pack(pady=2)
 
-        button_run = Button(top, text='Run', command=self.Run)
-        button_run.grid(row=4, column=0, columnspan=2, sticky=W + E + N + S, padx=5, pady=5)
+        Button(self.config_frame, text='Select the output directory', command=self.DirChooserDialog, width=25).pack()
+        self.out_dir_label = Label(self.config_frame, text='No directory selected').pack(pady=2)
 
-        button_about = Button(top, text='About', command=self.AboutDialog)
-        button_about.grid(row=5, column=0, columnspan=2, sticky=W + E + N + S, padx=5, pady=5)
+        # Buttons
+        self.bottom_frame = Frame(top)
+        self.bottom_frame.grid(row=1, column=0, columnspan=2, padx=2, pady=2)
 
-        button_quit = Button(top, text='Quit', command=top.destroy)
-        button_quit.grid(row=6, column=0, columnspan=2, sticky=W + E + N + S, padx=5, pady=5)
-
-        button_fc = Button(top, text='Select input file', command=self.FileChooserDialog)
-        button_fc.grid(row=0, column=1, sticky=W + E, padx=5, pady=5)
-
-        label3_text = 'No file selected'
-        self.label3 = Label(top, text=label3_text)
-        self.label3.grid(row=1, column=1)
-
-        button_dc = Button(top, text='Select output directory', command=self.DirChooserDialog)
-        button_dc.grid(row=2, column=1, sticky=W + E + N + S, padx=5, pady=5)
-
-        label4_text = 'No directory selected'
-        self.label4 = Label(top, text=label4_text)
-        self.label4.grid(row=3, column=1)
+        Button(self.bottom_frame, text='Run', command=self.Run, width=60).pack(fill=X, pady=5)
+        Button(self.bottom_frame, text='About', command=self.AboutDialog).pack(fill=X, pady=5)
+        Button(self.bottom_frame, text='Quit', command=top.destroy).pack(fill=X, pady=5)
 
     # The selection result from opt1 and opt2 radio buttons
     # Determines the type of file coversion to be done, XML to CSV ot CSV to XML
@@ -88,14 +71,14 @@ class XcGuiApplication:
     def FileChooserDialog(self):
         f = filedialog.askopenfilename()
         if len(f) != 0:
-            self.label3.config(text=PurePath(f).name)
+            self.in_file_label.config(text=PurePath(f).name)
             self.in_file = f
 
     # Directory choose for the destination location
     def DirChooserDialog(self):
         d = filedialog.askdirectory()
         if len(d) != 0:
-            self.label4.config(text=PurePath(d).name)
+            self.out_dir_label.config(text=PurePath(d).name)
             self.out_dir = d
 
     # Displays the license information
@@ -103,45 +86,48 @@ class XcGuiApplication:
         about_dialog = Toplevel(self.top)
         about_dialog.wm_title('About xc-converter ' + self.version)
         about_dialog.resizable(width=False, height=False)
-        about_dialog.geometry('{}x{}'.format(550, 500))
 
         about_label_text = 'Use of this software is subject to license conditions given below.'
         about_label = Label(about_dialog, text=about_label_text)
-        about_label.grid(row=0, sticky=W + E + N + S, padx=10, pady=10)
+        about_label.grid(row=0, column=0, columnspan=2, sticky=W + E + N + S, padx=10, pady=10)
 
         try:
             with open('LICENSE') as licensefile:
                 license_text = licensefile.read()
-                dialog_text = Text(about_dialog)
+                dialog_text = Text(about_dialog, borderwidth=3, relief="sunken")
                 dialog_text.insert(INSERT, license_text)
-                dialog_text.config(state = DISABLED)
-                dialog_text.grid(row=1, sticky=W + E + N + S, padx=0, pady=0)
+                dialog_text.config(state=DISABLED)
+                dialog_text.grid(row=1, column=0, sticky=W + E + N + S, padx=2, pady=0)
+
+                scrollbar = Scrollbar(about_dialog, command=dialog_text.yview)
+                scrollbar.grid(row=1, column=1, sticky='nsew')
+                dialog_text['yscrollcommand'] = scrollbar.set
 
         except OSError:
-            error_text = 'Opps...Cannot find the LICENSE file.\n\nPlease get the LICENSE file from https://github.com/fnoyanisi/xc-convert'
-            error_label = Label(about_dialog, text=error_text)
-            error_label.grid(row=1, sticky=W + E + N + S, padx=10, pady=10)
+            error_text = ('Opps...Cannot find the LICENSE file.\n\n'
+                          'Please get the LICENSE file from https://github.com/fnoyanisi/xc-convert')
+            Label(about_dialog, text=error_text).grid(row=1, sticky=W + E + N + S, padx=10, pady=10)
 
         download_url = 'You can obtain the source code from https://github.com/fnoyanisi/xc-convert'
-        url_label = Label(about_dialog, text=download_url, justify=LEFT)
-        url_label.grid(row=2, sticky=W + E + N + S, padx=10, pady=10)
+        Label(about_dialog, text=download_url, justify=LEFT).grid(row=2, column=0, columnspan=2, sticky=W + E + N + S,
+                                                                  padx=10, pady=10)
 
-        exit_button = Button(about_dialog, text = 'Close', command=about_dialog.destroy)
-        exit_button.grid(row=3, sticky=N + S, padx=0, pady=10)
+        Button(about_dialog, text='Close', command=about_dialog.destroy, width=25).grid(row=3, column=0, columnspan=2,
+                                                                                        sticky=N + S, padx=0, pady=10)
 
     # Performs the file conversion operation
     def Run(self):
         if not (self.in_file and self.out_dir and self.operation):
             msg = 'Please make sure you have\n' \
-                   '  * Selected the type of operation\n' \
-                   '  * Located the input file\n'\
-                   '  * Chosen the output directory\n'
-            messagebox.showwarning("Missing Information",msg)
+                  '  * Selected the type of operation\n' \
+                  '  * Located the input file\n' \
+                  '  * Specified an output directory\n'
+            messagebox.showwarning("Missing Information", msg)
             return
 
         # we got two types of operations; either x2c or c2x for XML to CSV and CSV to XML, respectively
         if self.operation == 'x2c':
-        # XML to CSV Conversion
+            # XML to CSV Conversion
 
             # Use DOM
             doc = minidom.parse(self.in_file)
@@ -175,7 +161,7 @@ class XcGuiApplication:
             # Convert the file
             now = datetime.datetime.now()
             timestamp = now.strftime('%Y-%m-%d-T%H-%M-%S')
-            out_file_name = re.sub('.csv','',PurePath(self.in_file).name) + '-' + timestamp + '.xml'
+            out_file_name = re.sub('.csv', '', PurePath(self.in_file).name) + '-' + timestamp + '.xml'
             try:
                 convertCsv2Xml(self.in_file, PurePath(self.out_dir, out_file_name))
             except OSError:
@@ -185,4 +171,4 @@ class XcGuiApplication:
             # never reached
             return
 
-        messagebox.showinfo("Done","File conversion has been completed!")
+        messagebox.showinfo("Done", "File conversion has been completed!")
