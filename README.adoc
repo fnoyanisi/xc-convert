@@ -5,6 +5,9 @@ _xc-convert_ is a simple tool to convert Nokia OSS system generated XML files to
 _xc-convert_ is developed by mailto:fnoyanisi@yahoo.com[Fehmi Noyan ISI]
 
 == Version History
+* *version 0.3 - (Sep 2017)*
+** Beta version - changed the GUI design
+
 * *version 0.2 - (Aug 2017)*
 ** Beta version - testing the code
 
