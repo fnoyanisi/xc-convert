@@ -27,6 +27,7 @@ def listXml2Csv(node_p):
 
     # string are immutable, so use a list, and then join()
     tmp = []
+    parameter_value = ""
     for item in node_p.childNodes:
         if item.nodeName == 'item':
             tmp.append('{')
@@ -41,8 +42,11 @@ def listXml2Csv(node_p):
             tmp.append('}')
             parameter_value = ''.join(tmp)
 
+    if len(parameter_value) == 0:
+        return (parameter_name,'')
+    else:
     # finally, replace any ';}' with '}' and return
-    return (parameter_name, re.sub(';}', '}', parameter_value))
+        return (parameter_name, re.sub(';}', '}', parameter_value))
 
 def listCsv2Xml(raw_str, fd):
     """
