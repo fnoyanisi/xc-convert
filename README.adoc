@@ -1,18 +1,26 @@
 == About xc-convert 
 
-_xc-convert_ is a simple tool to convert Nokia OSS system generated XML files to CSV (Comma Seperated Values) files and vice versa.  
+_xc-convert_ is a simple utility to convert Nokia system generated XML files in to CSV (Comma Seperated Values) files and vice versa.
 
 _xc-convert_ is developed by mailto:fnoyanisi@yahoo.com[Fehmi Noyan ISI]
 
 == Version History
-* *version 0.3 - (Sep 2017)*
-** Beta version - changed the GUI design
+* *version 0.4 (beta) - (Nov 2017)*
+** Fixed a bug that prevents the file dialogs to work properly
+** Fixed a bug that causes listXml2Csv() function to produce a runtime error
+** Added support for reading WCEL XML (experimental)
 
-* *version 0.2 - (Aug 2017)*
+* *version 0.3 (beta) - (Sep 2017)*
+** Changed the GUI design
+
+* *version 0.2 (beta) - (Aug 2017)*
 ** Beta version - testing the code
 
 * *version 0.1 - (Aug 2017)*	
 ** Initial alpha version
+
+== TODO
+* listXml2Csv() needs to be revisited in order to add WCEL list support
 
 == License
 
