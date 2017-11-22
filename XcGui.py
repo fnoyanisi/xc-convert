@@ -13,7 +13,7 @@ class XcGuiApplication:
 
     # Initialize the GUI
     def __init__(self, top):
-        self.version = 'v0.3'
+        self.version = 'v0.4'
         self.in_file = None
         self.out_dir = None
         self.operation = None
@@ -49,10 +49,12 @@ class XcGuiApplication:
                     command=self.SetSelection).pack()
 
         Button(self.config_frame, text='Select the input file', command=self.FileChooserDialog, width=25).pack()
-        self.in_file_label = Label(self.config_frame, text='No file selected').pack(pady=2)
+        self.in_file_label = Label(self.config_frame, text='No file selected')
+        self.in_file_label.pack(pady=2)
 
         Button(self.config_frame, text='Select the output directory', command=self.DirChooserDialog, width=25).pack()
-        self.out_dir_label = Label(self.config_frame, text='No directory selected').pack(pady=2)
+        self.out_dir_label = Label(self.config_frame, text='No directory selected')
+        self.out_dir_label.pack(pady=2)
 
         # Buttons
         self.bottom_frame = Frame(top)
