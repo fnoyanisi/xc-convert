@@ -5,6 +5,10 @@ _xc-convert_ is a simple utility to convert Nokia system generated XML files in 
 _xc-convert_ is developed by mailto:fnoyanisi@yahoo.com[Fehmi Noyan ISI]
 
 == Version History
+* *version 0.5 (beta) - (Dec 2017)*
+** Added the "operation" type selection for CSV to XML conversion
+** Updated the convertCsv2Xml() function
+
 * *version 0.4 (beta) - (Nov 2017)*
 ** Fixed a bug that prevents the file dialogs to work properly
 ** Fixed a bug that causes listXml2Csv() function to produce a runtime error

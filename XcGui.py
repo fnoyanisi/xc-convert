@@ -13,10 +13,11 @@ class XcGuiApplication:
 
     # Initialize the GUI
     def __init__(self, top):
-        self.version = 'v0.4'
+        self.version = 'v0.5'
         self.in_file = None
         self.out_dir = None
-        self.operation = None
+        self.conversion_type = None
+        self.csv_to_xml_operation= None
 
         self.top = top
         top.wm_title('xc-converter ' + self.version)
@@ -48,6 +49,25 @@ class XcGuiApplication:
         Radiobutton(self.config_frame, text='CSV to XML', variable=self.selection, value='c2x',
                     command=self.SetSelection).pack()
 
+		# Operation type
+		# This is another pack() manager inside the config_frame
+        self.conversion_type_frame = Frame(self.config_frame)
+        self.conversion_type_frame.pack()
+        Label(self.conversion_type_frame, text='Type of operation :').pack(side=LEFT)
+
+        self.csv_to_xml_operation = StringVar()
+        self.csv_to_xml_operation.set('none')
+        csv_to_xml_operation_types = ('update','create','delete')
+
+        self.option_menu = OptionMenu(self.conversion_type_frame, self.csv_to_xml_operation, *csv_to_xml_operation_types)
+        self.option_menu.config(state = DISABLED)
+        self.option_menu.pack(side = RIGHT)
+
+        # End of Operation Type
+
+        # Just an empty row
+        Label(self.config_frame, text=' ').pack()
+
         Button(self.config_frame, text='Select the input file', command=self.FileChooserDialog, width=25).pack()
         self.in_file_label = Label(self.config_frame, text='No file selected')
         self.in_file_label.pack(pady=2)
@@ -65,9 +85,14 @@ class XcGuiApplication:
         Button(self.bottom_frame, text='Quit', command=top.destroy).pack(fill=X, pady=5)
 
     # The selection result from opt1 and opt2 radio buttons
-    # Determines the type of file coversion to be done, XML to CSV ot CSV to XML
+    # Determines the type of file conversion to be done, XML to CSV to CSV to XML
     def SetSelection(self):
-        self.operation = self.selection.get()
+        self.conversion_type = self.selection.get()
+
+        if self.conversion_type == 'c2x':
+            self.option_menu.config(state = NORMAL)
+        elif self.conversion_type == 'x2c':
+            self.option_menu.config(state = DISABLED)
 
     # File chooser for the input file
     def FileChooserDialog(self):
@@ -119,7 +144,8 @@ class XcGuiApplication:
 
     # Performs the file conversion operation
     def Run(self):
-        if not (self.in_file and self.out_dir and self.operation):
+        if not (self.in_file and self.out_dir and self.conversion_type) or \
+        (self.conversion_type == 'c2x' and self.csv_to_xml_operation.get() == 'none'):
             msg = 'Please make sure you have\n' \
                   '  * Selected the type of operation\n' \
                   '  * Located the input file\n' \
@@ -128,7 +154,7 @@ class XcGuiApplication:
             return
 
         # we got two types of operations; either x2c or c2x for XML to CSV and CSV to XML, respectively
-        if self.operation == 'x2c':
+        if self.conversion_type == 'x2c':
             # XML to CSV Conversion
 
             # Use DOM
@@ -152,7 +178,7 @@ class XcGuiApplication:
                 messagebox.showerror('IO Error : Cannot convert the XML file!')
                 return
 
-        elif self.operation == 'c2x':
+        elif self.conversion_type == 'c2x':
             # CSV to XML Conversion
 
             # Check CSV file format
@@ -165,7 +191,7 @@ class XcGuiApplication:
             timestamp = now.strftime('%Y-%m-%d-T%H-%M-%S')
             out_file_name = re.sub('.csv', '', PurePath(self.in_file).name) + '-' + timestamp + '.xml'
             try:
-                convertCsv2Xml(self.in_file, PurePath(self.out_dir, out_file_name))
+                convertCsv2Xml(self.in_file, PurePath(self.out_dir, out_file_name), self.csv_to_xml_operation.get())
             except OSError:
                 messagebox.showerror('IO Error : Cannot convert the CSV file!')
                 return

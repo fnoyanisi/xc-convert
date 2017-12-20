@@ -98,7 +98,7 @@ def convertXmlToCsv(xml_doc, csv_path, header_dict):
 
         # a header for the CSV file
         # add some additional attributes from managedObject node
-        # to the begining of the list containing the parameter names
+        # to the beginning of the list containing the parameter names
         csv_header= header_dict.get(mo_class)
         csv_header.insert(0,'class')
         csv_header.insert(1,'version')
@@ -172,12 +172,13 @@ def examineCsvFormat(csv_file):
 
     return True
 
-def convertCsv2Xml(csv_file, xml_file):
+def convertCsv2Xml(csv_file, xml_file, operation):
     """
     This function converts a valid CSV file to an XML
 
     :param csv_file: path to input CSV file
     :param xml_file: path to output XML file
+    :param xml_file: operation type
     :return: No value is returned
     """
     mo_attributes = ['class', 'version', 'distName', 'id']
@@ -203,7 +204,7 @@ def convertCsv2Xml(csv_file, xml_file):
         for row in reader:
             # the Managed Object node is of the form
             # <managedObject class="MRBTS" version="FL16" distName="PLMN-PLMN/MRBTS-1111/LNBTS-1111" id="1111111">
-            mo_line = '\t'*2 + '<managedObject class="' + row['class'] + '" version="' + row['version'] +'" distName="' + row['distName'] + '" id="' + row['id'] + '">\n'
+            mo_line = '\t'*2 + '<managedObject class="' + row['class'] + '" operation="' + operation +'" version="' + row['version'] +'" distName="' + row['distName'] + '" id="' + row['id'] + '">\n'
             xmlfile.write(mo_line)
 
             # rest of the parameters
