@@ -1,3 +1,4 @@
+import string
 from pathlib import PurePath
 from xml.dom import minidom
 import HelperFunctions
@@ -159,6 +160,9 @@ def examineCsvFormat(csv_file):
     # any CVS file has to have in order to be converted into an XML
     test_values = ['class','version','distName','id']
     csv_values = []
+
+    # remove non-printable characters
+    header = ''.join([x for x in header if x in string.printable])
 
     if not ',' in header:
         return False
