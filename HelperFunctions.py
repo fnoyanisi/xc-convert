@@ -1,3 +1,4 @@
+import string
 from xml.dom import minidom
 import re
 
@@ -90,3 +91,7 @@ def listCsv2Xml(raw_str, fd):
         w += 1
 
     return w
+
+def removeNonPrintable(str):
+    str = ''.join([x for x in str if x in string.printable])
+    return str

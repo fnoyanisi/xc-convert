@@ -1,4 +1,3 @@
-import string
 from pathlib import PurePath
 from xml.dom import minidom
 import HelperFunctions
@@ -162,7 +161,7 @@ def examineCsvFormat(csv_file):
     csv_values = []
 
     # remove non-printable characters
-    header = ''.join([x for x in header if x in string.printable])
+    header = HelperFunctions.removeNonPrintable(header)
 
     if not ',' in header:
         return False
@@ -206,6 +205,17 @@ def convertCsv2Xml(csv_file, xml_file, operation):
 
         reader = csv.DictReader(csvfile)
         for row in reader:
+
+            # remove non-printable chars from dict keys
+            tmp_dict = {}
+            for key in row.keys():
+                new_key = HelperFunctions.removeNonPrintable(key)
+                if not new_key == key:
+                    tmp_dict[key] = new_key
+
+            for old_key in tmp_dict.keys():
+                row[tmp_dict[old_key]] = row.pop(old_key)
+
             # the Managed Object node is of the form
             # <managedObject class="MRBTS" version="FL16" distName="PLMN-PLMN/MRBTS-1111/LNBTS-1111" id="1111111">
             mo_line = '\t'*2 + '<managedObject class="' + row['class'] + '" operation="' + operation +'" version="' + row['version'] +'" distName="' + row['distName'] + '" id="' + row['id'] + '">\n'
