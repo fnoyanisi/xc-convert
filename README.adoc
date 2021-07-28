@@ -7,6 +7,7 @@ _xc-convert_ is developed by mailto:fnoyanisi@yahoo.com[Fehmi Noyan ISI]
 == Version History
 * *version 0.5.1 (beta) - (July 2021)*
 ** Fixed an issue causing the script to reject legit CSV files
+** Added run.bat into the main repo 
 
 * *version 0.5 (beta) - (Dec 2017)*
 ** Added the "operation" type selection for CSV to XML conversion
