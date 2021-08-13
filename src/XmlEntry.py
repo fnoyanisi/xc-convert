@@ -9,9 +9,12 @@ class XmlEntry:
         self.name = n
 
     def add_properties(self, p):
-        self.propertyValues = p
-        for key in p:
-            self.propertyNames.append(key)
+        if isinstance(p, list):
+            self.propertyValues = p
+            for key in p:
+                self.propertyNames.append(key)
+        else:
+            raise RuntimeError("expecting a list type")
 
     def add_property(self, pname, pval):
         self.propertyNames.append(pname)
