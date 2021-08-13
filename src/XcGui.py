@@ -3,7 +3,6 @@ GUI Layout for xc-converter
 """
 from tkinter import *
 from tkinter import filedialog, messagebox
-from pathlib import PurePath
 from XcFunctions import *
 import datetime
 
