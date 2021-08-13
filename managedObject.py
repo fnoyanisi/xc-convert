@@ -13,41 +13,51 @@
 #     </managedObject>
 #
 
-class list:
+# base class for compex entries in the XML file
+# this could be a managed object or a list
+class XmlEntry:
     name = ""
-    properties = {}
-
-class managedObject:
-    moClass = ""
-    version = ""
-    distName = ""
-    id = ""
-    propertyValues = {}
     propertyNames = []
+    propertyValues = {}
 
-    # constructor
-    def __init__(self, m, v, d, i):
-        self.moClass = m
-        self.version = v
-        self.distName = d
-        self.id = i
+    def __init__(self, n):
+        self.name = n
 
-    # adds a new property to this managed object
-    def addProperty(self, pname, pval):
+    def add_properties(self, p):
+        self.propertyValues = p
+        for key in p:
+            self.propertyNames.append(key)
+
+    def add_property(self, pname, pval):
         self.propertyNames.append(pname)
         self.propertyValues[pname] = pval
 
-    # checks whether this managed object has a property with
-    # name = pname
-    def hasProperty(self, pname):
-        if pname in self.propertyName:
+    def has_property(self, pname):
+        if pname in self.propertyNames:
             return True
         else:
             return False
 
-    # returns the value of a property
-    def getProperty(self, pname):
-        if pname in self.propertyName:
+    def get_property(self, pname):
+        if pname in self.propertyNames:
             return self.propertyValues[pname]
         else:
             return None
+
+
+class List(XmlEntry):
+    pass
+
+
+class ManagedObject(XmlEntry):
+    moClass = ""
+    version = ""
+    distName = ""
+    id = ""
+
+    # constructor
+    def __init__(self, m, v, d, i, n):
+        super().__init__(n)
+        self.version = v
+        self.distName = d
+        self.id = i
