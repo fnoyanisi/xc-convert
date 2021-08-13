@@ -28,8 +28,8 @@ class XcGuiApplication:
         self.logo_frame = Frame(top)
         self.logo_frame.grid(row=0, column=0, padx=4, pady=5)
 
-        self.img_xml = PhotoImage(file='img_xml.gif')
-        self.img_csv = PhotoImage(file='img_csv.gif')
+        self.img_xml = PhotoImage(file='./img/img_xml.gif')
+        self.img_csv = PhotoImage(file='./img/img_csv.gif')
         Label(self.logo_frame, image=self.img_xml).grid(row=0, column=0, sticky='ne')
         Label(self.logo_frame, image=self.img_csv).grid(row=0, column=1, sticky='nw')
         Label(self.logo_frame, text='Xml to Csv Converter ' + self.version, font=('bold')).grid(row=1, column=0,
@@ -119,7 +119,7 @@ class XcGuiApplication:
         about_label.grid(row=0, column=0, columnspan=2, sticky=W + E + N + S, padx=10, pady=10)
 
         try:
-            with open('LICENSE') as licensefile:
+            with open('../LICENSE') as licensefile:
                 license_text = licensefile.read()
                 dialog_text = Text(about_dialog, borderwidth=3, relief="sunken")
                 dialog_text.insert(INSERT, license_text)

@@ -2,4 +2,4 @@
 echo DO NOT CLOSE THIS WINDOW!
 echo.
 echo starting xc-convert...
-"C:\Program Files\Anaconda3\python.exe" xc-convert.py
+"C:\Program Files\Anaconda3\python.exe" src\xc-convert.py

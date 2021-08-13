@@ -1,5 +1,4 @@
 from pathlib import PurePath
-from xml.dom import minidom
 import HelperFunctions
 import csv, re, datetime
 
