@@ -93,7 +93,8 @@ class XmlFile:
                                 pass
 
                         # write the object into the CSV file
-                        writer.writerow(mo.propertyValues)
+                        writer.writerow(mo.get_values())
+                        # writer.writerow(mo.propertyValues)
 
     def __read_list(self, node_p):
         """

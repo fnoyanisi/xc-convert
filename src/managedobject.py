@@ -33,10 +33,10 @@ class List(XmlEntry):
 
 class ManagedObject(XmlEntry):
     # uses XmlEntry.name as the moClass value
-    moClass = ""
-    version = ""
-    distName = ""
-    id = ""
+    # moClass = ""
+    # version = ""
+    # distName = ""
+    # id = ""
 
     # constructor
     def __init__(self, n, v, d, i):
@@ -45,3 +45,11 @@ class ManagedObject(XmlEntry):
         self.distName = d
         self.id = i
         self.moClass = self.name
+
+    def get_values(self):
+        # add moClass, version, distName and id
+        # and return to the caller
+        # concatenate two dictionaries
+        d = {'class': self.moClass, 'version': self.version, 'distName': self.distName, 'id': self.id}
+        d.update(self.propertyValues)
+        return d
