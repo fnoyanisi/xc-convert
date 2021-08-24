@@ -5,6 +5,7 @@ from tkinter import *
 from tkinter import filedialog, messagebox
 from XcFunctions import *
 import datetime
+from xmlfile import XmlFile
 
 
 class XcGuiApplication:
@@ -155,26 +156,11 @@ class XcGuiApplication:
         # we got two types of operations; either x2c or c2x for XML to CSV and CSV to XML, respectively
         if self.conversion_type == 'x2c':
             # XML to CSV Conversion
-
-            # Use DOM
-            doc = minidom.parse(self.in_file)
-
-            # Check XML file format
-            if not examineXmlFormat(doc):
-                messagebox.showerror('Unsupported XML file format!')
-                return
-
-            # Create a header dictionary
-            header_dictionary = createManagedObjectDict(doc)
-            if len(header_dictionary) == 0:
-                messagebox.showerror('Error while processing the XML file!')
-                return
-
-            # Convert the file
             try:
-                convertXmlToCsv(doc, self.out_dir, header_dictionary)
-            except OSError:
-                messagebox.showerror('IO Error : Cannot convert the XML file!')
+                xml_file = XmlFile(self.in_file)
+                xml_file.convert(self.out_dir)
+            except RuntimeError as err:
+                messagebox.showerror(err)
                 return
 
         elif self.conversion_type == 'c2x':

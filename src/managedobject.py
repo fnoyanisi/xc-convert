@@ -13,15 +13,15 @@ represents a managedObject entry in an XML file of the form
        ....
      </managedObject>
 """
-import xmlentry
+from xmlentry import XmlEntry
 
 
-class List(xmlentry):
+class List(XmlEntry):
     def __init__(self, n):
         super().__init__(n + '{}')
 
 
-class ManagedObject(xmlentry):
+class ManagedObject(XmlEntry):
     # uses XmlEntry.name as the moClass value
     moClass = ""
     version = ""

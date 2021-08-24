@@ -1,12 +1,10 @@
 # base class for more complex entries in the XML file
 # this can be subclassed by a managed object or a list
 class XmlEntry:
-    name = ""
-    propertyNames = []
-    propertyValues = {}
-
     def __init__(self, n):
         self.name = n
+        self.propertyNames = []
+        self.propertyValues = {}
 
     def add_properties(self, p):
         if isinstance(p, list):

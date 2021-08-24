@@ -1,7 +1,8 @@
 from pathlib import PurePath
 import csv, datetime
 from xml.dom import minidom
-from managedobject import ManagedObject, List
+from managedobject import ManagedObject
+from managedobject import List
 
 
 class XmlFile:
@@ -23,9 +24,9 @@ class XmlFile:
 
         # step 1
         # create the headers dictionary
-        mo_list = self.doc.getElementsByTagName("managedObject")
+        list_of_managedObjects = self.doc.getElementsByTagName("managedObject")
 
-        for mo in mo_list:
+        for mo in list_of_managedObjects:
             mo_class = mo.getAttribute("class")
             if mo_class not in self.headers:
                 # if this mo_class does not exist, create a new entry in the
@@ -70,7 +71,7 @@ class XmlFile:
                 # OK, now iterate through the managedObject list and write a separate CSV file for
                 # each one. So, if the inout XML includes data for different managedObject classes,
                 # a separate CSV file will be created for each one of them
-                for mo_entry in mo_list:
+                for mo_entry in list_of_managedObjects:
                     if mo_entry.getAttribute("class") == mo_class:
                         mo = ManagedObject(mo_class,
                                            mo_entry.getAttribute("version"),
@@ -85,8 +86,8 @@ class XmlFile:
                                 mo.add_property(p.getAttribute("name"), p.firstChild.data)
                             elif p.nodeName == 'list':
                                 # we have a list to process
-                                mo_list = self.__read_list(p)
-                                mo.add_property(mo_list.name, mo_list)
+                                list_of_managedObjects = self.__read_list(p)
+                                mo.add_property(list_of_managedObjects.name, list_of_managedObjects)
                             else:
                                 # I don't know what this entry is, so skipping
                                 pass
@@ -124,11 +125,11 @@ class XmlFile:
                 for item_p in item.childNodes:
                     if item_p.nodeName == 'p':
                         # normal property
-                        mo_list.add_parameter(item_p.getAttribute("name"), item_p.firstChild.data)
+                        mo_list.add_property(item_p.getAttribute("name"), item_p.firstChild.data)
                     elif item_p.nodeName == 'list':
                         # nested list
                         inner_list = self.__read_list(item_p)
-                        mo_list.add_parameter(inner_list.name, inner_list)
+                        mo_list.add_property(inner_list.name, inner_list)
                     else:
                         # unknown node type, skip
                         pass
