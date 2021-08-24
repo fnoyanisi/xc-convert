@@ -86,8 +86,8 @@ class XmlFile:
                                 mo.add_property(p.getAttribute("name"), p.firstChild.data)
                             elif p.nodeName == 'list':
                                 # we have a list to process
-                                list_of_managedObjects = self.__read_list(p)
-                                mo.add_property(list_of_managedObjects.name, list_of_managedObjects)
+                                list_entry = self.__read_list(p)
+                                mo.add_property(list_entry.name, list_entry)
                             else:
                                 # I don't know what this entry is, so skipping
                                 pass
@@ -115,7 +115,7 @@ class XmlFile:
            |   +--p2 name='...'
 
         :param node_p: valid XML node
-        :return: a tuple whose first item is 'parameter_name' and second item is corresponding 'parameter_value'
+        :return: a List object representing the list entry in the XML file
         """
         mo_list = List(node_p.getAttribute("name"))
 

@@ -20,6 +20,16 @@ class List(XmlEntry):
     def __init__(self, n):
         super().__init__(n + '{}')
 
+    def __str__(self):
+        s = ''
+        for key,val in self.propertyValues.items():
+            if '{}' not in key:
+                # normal entry
+                s = s + key + ':' + val + ','
+            else:
+                # nested list
+                s = s + key + str(val)
+        return '{' + s[:-1] + '}'
 
 class ManagedObject(XmlEntry):
     # uses XmlEntry.name as the moClass value
