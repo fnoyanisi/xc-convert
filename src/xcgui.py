@@ -3,7 +3,7 @@ GUI Layout for xc-converter
 """
 from tkinter import *
 from tkinter import filedialog, messagebox
-from XcFunctions import *
+from xcfunctions import *
 import datetime
 from xmlfile import XmlFile
 

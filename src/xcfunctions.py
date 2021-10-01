@@ -1,5 +1,5 @@
 from pathlib import PurePath
-import HelperFunctions
+import helperfunctions
 import csv, re, datetime
 
 # This is the string to be used if a parameter is missing for the current managedObject
@@ -128,7 +128,7 @@ def convertXmlToCsv(xml_doc, csv_path, header_dict):
                             parameter_dict[parameter_name] = parameter_value
                         elif p.nodeName == 'list':
                             t=()
-                            t = HelperFunctions.listXml2Csv(p)
+                            t = helperfunctions.listXml2Csv(p)
                             parameter_dict[t[0]] = t[1]
                         else:
                             pass
@@ -160,7 +160,7 @@ def examineCsvFormat(csv_file):
     csv_values = []
 
     # remove non-printable characters
-    header = HelperFunctions.removeNonPrintable(header)
+    header = helperfunctions.removeNonPrintable(header)
 
     if not ',' in header:
         return False
@@ -208,7 +208,7 @@ def convertCsv2Xml(csv_file, xml_file, operation):
             # remove non-printable chars from dict keys
             tmp_dict = {}
             for key in row.keys():
-                new_key = HelperFunctions.removeNonPrintable(key)
+                new_key = helperfunctions.removeNonPrintable(key)
                 if not new_key == key:
                     tmp_dict[key] = new_key
 
@@ -229,7 +229,7 @@ def convertCsv2Xml(csv_file, xml_file, operation):
                     elif '{}' in parameter_name:
                         # a list
                         xmlfile.write('\t'*3 + '<list name="' + re.sub('{}','',parameter_name) + '">\n')
-                        HelperFunctions.listCsv2Xml(row[parameter_name], xmlfile)
+                        helperfunctions.listCsv2Xml(row[parameter_name], xmlfile)
                         xmlfile.write('\t'*3 + '</list>\n')
                     else:
                         # formal <p..> .. </p>
