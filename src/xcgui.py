@@ -160,7 +160,8 @@ class XcGuiApplication:
                 xml_file = XmlConverter(self.in_file)
                 xml_file.convert(self.out_dir)
             except RuntimeError as err:
-                messagebox.showerror(err)
+                print(err)
+                messagebox.showerror(title="Error", message=err)
                 return
 
         elif self.conversion_type == 'c2x':

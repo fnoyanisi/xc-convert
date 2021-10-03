@@ -1,6 +1,9 @@
 from pathlib import PurePath
 import csv, datetime
 from xml.dom import minidom
+
+import xml
+
 from managedobject import ManagedObject
 from managedobject import List
 
@@ -13,7 +16,6 @@ class XmlConverter:
 
     def __init__(self, f):
         self.file_path = f
-        self.doc = minidom.parse(self.file_path)
         self.__check_format()   # format validation
 
     def convert(self, out_dir):
@@ -152,12 +154,20 @@ class XmlConverter:
         :param xml_doc: a valid XML document object returned by minidom.parse()
         :return: True if the file format is valid, False otherwise
         """
-        raml_nodes = self.doc.getElementsByTagName("raml")
         # check 1
-        if raml_nodes is None or not raml_nodes[0].hasChildNodes():
+        # can the XML parser work on the file?
+        try:
+            self.doc = minidom.parse(self.file_path)
+        except xml.parsers.expat.ExpatError as e:
             raise RuntimeError("Unsupported XML format")
 
         # check 2
+        # check the DOM
+        raml_nodes = self.doc.getElementsByTagName("raml")
+        if raml_nodes is None or not raml_nodes[0].hasChildNodes():
+            raise RuntimeError("Unsupported XML format")
+
+        # check 3
         # find cmData
         cmData_node = None
         for cmData_node in raml_nodes[0].childNodes:
@@ -169,7 +179,7 @@ class XmlConverter:
         if cmData_node is None or not cmData_node.hasChildNodes():
             raise RuntimeError("Unsupported XML format")
 
-        # check 3
+        # check 4
         # at least one managedObject node must exist
         mo_node = None
         for mo_node in cmData_node.childNodes:
