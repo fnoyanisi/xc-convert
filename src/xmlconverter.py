@@ -4,18 +4,18 @@ from xml.dom import minidom
 
 import xml
 
+from fileconverter import FileConverter
 from managedobject import ManagedObject
 from managedobject import List
 
 
-class XmlConverter:
+class XmlConverter(FileConverter):
     missing_val_str = '#N/A'
-    file_path = ""       # path to the XML file
     headers = {}    # 'managedObject class' : [list of available parameters]
     doc = None      # XML doc object
 
     def __init__(self, f):
-        self.file_path = f
+        super().__init__(f)
         self.__check_format()   # format validation
 
     def convert(self, out_dir):
@@ -52,7 +52,7 @@ class XmlConverter:
             # full path for the CSV file - append a date like 20210813 at the end
             now = datetime.datetime.now()
             timestamp = now.strftime('%Y%m%d')
-            path_to_csv_file = PurePath(out_dir, mo_class + "_" + str(timestamp) + '.csv')
+            path_to_csv_file = PurePath(self.out_dir, mo_class + "_" + str(timestamp) + '.csv')
 
             # a header for the CSV file
             # add some additional attributes from managedObject node
