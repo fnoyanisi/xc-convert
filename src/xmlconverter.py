@@ -5,7 +5,7 @@ from managedobject import ManagedObject
 from managedobject import List
 
 
-class XmlFile:
+class XmlConverter:
     missing_val_str = '#N/A'
     file_path = ""       # path to the XML file
     headers = {}    # 'managedObject class' : [list of available parameters]

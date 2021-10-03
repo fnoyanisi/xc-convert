@@ -5,7 +5,7 @@ from tkinter import *
 from tkinter import filedialog, messagebox
 from xcfunctions import *
 import datetime
-from xmlfile import XmlFile
+from xmlconverter import XmlConverter
 
 
 class XcGuiApplication:
@@ -157,7 +157,7 @@ class XcGuiApplication:
         if self.conversion_type == 'x2c':
             # XML to CSV Conversion
             try:
-                xml_file = XmlFile(self.in_file)
+                xml_file = XmlConverter(self.in_file)
                 xml_file.convert(self.out_dir)
             except RuntimeError as err:
                 messagebox.showerror(err)
