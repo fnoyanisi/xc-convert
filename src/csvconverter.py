@@ -6,6 +6,10 @@ import helperfunctions
 class CsvConverter(FileConverter):
     def __init__(self, f):
         super().__init__(f)
+        self.__check_format()  # format validation
+
+    def convert(self):
+        pass
 
     def __check_format(self):
         header = ''
