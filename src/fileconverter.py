@@ -8,3 +8,5 @@ class FileConverter:
         self.out_dir = out_dir
         print("implement me")
 
+    def __check_format(self):
+        print("implement me")
