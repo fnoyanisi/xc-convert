@@ -1,6 +1,7 @@
 # base class for a file converter
 class FileConverter:
     def __init__(self, f):
+        self.missing_val_str = '#N/A'
         self.file_path = f
         self.out_dir = ""
 
