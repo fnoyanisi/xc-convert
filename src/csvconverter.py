@@ -40,7 +40,7 @@ class CsvConverter(FileConverter):
         if not ',' in header:
             raise RuntimeError("Unsupported CSV format")
         else:
-            csv_values = header.split(',')
+            csv_columns = header.split(',')
 
         # make sure csv_values is not shorter than test_values
         # and the CSV file has all the necessary fields in it
