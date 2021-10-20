@@ -23,6 +23,8 @@ class XmlConverter(FileConverter):
         depending on the number of managedObject classes in the XML file.
         """
 
+        self.out_dir = out_dir
+
         # step 1
         # create the headers dictionary
         list_of_managedObjects = self.doc.getElementsByTagName("managedObject")
