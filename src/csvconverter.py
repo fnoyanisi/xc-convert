@@ -26,11 +26,12 @@ class CsvConverter(FileConverter):
         if self.operation == 'none':
             raise RuntimeError("Please select the operation type")
 
+        self.out_dir = out_dir
         csv_file = self.file_path
         mo_attributes = ['class', 'version', 'distName', 'id']
 
         now = datetime.datetime.now()
-        timestamp = now.strftime('%Y-%m-%dT%H:%M:%S')
+        timestamp = now.strftime('%Y-%m-%dT%H-%M-%S')
         out_file_name = re.sub('.csv', '', PurePath(csv_file).name) + '-' + timestamp + '.xml'
         xml_file = PurePath(out_dir, out_file_name)
 
@@ -46,7 +47,7 @@ class CsvConverter(FileConverter):
             xmlfile.write('\t<cmData type="actual">\n')
             xmlfile.write('\t' * 2 + '<header>\n')
             xmlfile.write(
-                '\t' * 3 + '<log dateTime="' + timestamp + '" action="created" appInfo="ActualExporter">InternalValues are used</log>\n')
+                '\t' * 3 + '<log dateTime="' + now.strftime('%Y-%m-%dT%H:%M:%S') + '" action="created" appInfo="ActualExporter">InternalValues are used</log>\n')
             xmlfile.write('\t' * 2 + '</header>\n')
 
             reader = csv.DictReader(csvfile)
@@ -78,7 +79,7 @@ class CsvConverter(FileConverter):
                         elif '{}' in parameter_name:
                             # a list
                             xmlfile.write('\t' * 3 + '<list name="' + re.sub('{}', '', parameter_name) + '">\n')
-                            helperfunctions.listCsv2Xml(row[parameter_name], xmlfile)
+                            xmlfile.write(self.__generate_list(row[parameter_name]))
                             xmlfile.write('\t' * 3 + '</list>\n')
                         else:
                             # formal <p..> .. </p>
@@ -126,3 +127,41 @@ class CsvConverter(FileConverter):
         # and the CSV file has all the necessary fields in it
         if len(csv_columns) < len(required_columns) or required_columns != csv_columns[:len(required_columns)]:
             raise RuntimeError("Unsupported CSV format")
+
+    def __generate_list(self, raw_str):
+        """
+        This functions converts a string which is of {param1=123;param2=456}{param1=789;param2=000}
+        format into given XML tree
+
+         list name='....'
+           |
+           +--item1
+           |   |
+           |   +--p1 name='...'
+           |   |
+           |   +--p2 name='...'
+           |
+           +--item2
+           |   |
+           |   +--p1 name='...'
+           |   |
+           |   +--p2 name='...'
+
+        :param raw_str: string value
+        :return: generated string for the list structure
+        """
+        s = ""
+
+        # just in case there is nay whitespace characters in the input string
+        trimmed = re.sub(' ','',raw_str)
+        for list_item in trimmed.split('}{'):
+            # remove any curly brackets
+            # tmp has param1=123;param2=456;param3=789 format
+            tmp = re.sub('[{}]','',list_item)
+
+            s.join('\t'*4 + '<list>\n')
+            for i in tmp.split(';'):
+                p,v = i.split(':')
+                s.join('\t'*5 + '<p name="' + p + '">' + v + '</p>\n')
+            s.join('\t'*4 + '</list>\n')
+        return s
