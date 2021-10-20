@@ -2,11 +2,12 @@
 GUI Layout for xc-converter
 """
 from tkinter import *
-from tkinter import filedialog, messagebox
+from tkinter import filedialog
+from tkinter import messagebox
 from xcfunctions import *
-import datetime
-from xmlconverter import XmlConverter
 
+from xmlconverter import XmlConverter
+from csvconverter import CsvConverter
 
 class XcGuiApplication:
     """ GUI layout for xc-convert application """
@@ -157,8 +158,8 @@ class XcGuiApplication:
         if self.conversion_type == 'x2c':
             # XML to CSV Conversion
             try:
-                xml_file = XmlConverter(self.in_file)
-                xml_file.convert(self.out_dir)
+                xml_converter = XmlConverter(self.in_file)
+                xml_converter.convert(self.out_dir)
             except RuntimeError as err:
                 print(err)
                 messagebox.showerror(title="Error", message=err)
@@ -166,20 +167,13 @@ class XcGuiApplication:
 
         elif self.conversion_type == 'c2x':
             # CSV to XML Conversion
-
-            # Check CSV file format
-            if not examineCsvFormat(self.in_file):
-                messagebox.showerror('Unsupported CSV file format!')
-                return
-
-            # Convert the file
-            now = datetime.datetime.now()
-            timestamp = now.strftime('%Y-%m-%d-T%H-%M-%S')
-            out_file_name = re.sub('.csv', '', PurePath(self.in_file).name) + '-' + timestamp + '.xml'
             try:
-                convertCsv2Xml(self.in_file, PurePath(self.out_dir, out_file_name), self.csv_to_xml_operation.get())
-            except OSError:
-                messagebox.showerror('IO Error : Cannot convert the CSV file!')
+                csv_converter = CsvConverter(self.in_file)
+                csv_converter.set_operation(self.csv_to_xml_operation.get())
+                csv_converter.convert(self.out_dir)
+            except RuntimeError as err:
+                print(err)
+                messagebox.showerror(title="Error", message=err)
                 return
         else:
             # never reached
