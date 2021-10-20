@@ -1,15 +1,95 @@
 from fileconverter import FileConverter
+from pathlib import PurePath
 
+import datetime
+import re
+import csv
 import helperfunctions
 
 
 class CsvConverter(FileConverter):
     def __init__(self, f):
         super().__init__(f)
+        self.operation = 'none'
         self.__check_format()  # format validation
 
-    def convert(self):
-        pass
+    def set_operation(self, o):
+        if not o in ['update','create','delete']:
+            raise RuntimeError("Invalid operation type: " + str(o))
+        self.operation = o
+
+    def convert(self, out_dir):
+        """
+        This function converts a valid CSV file to an XML
+        """
+
+        if self.operation == 'none':
+            raise RuntimeError("Please select the operation type")
+
+        csv_file = self.file_path
+        mo_attributes = ['class', 'version', 'distName', 'id']
+
+        now = datetime.datetime.now()
+        timestamp = now.strftime('%Y-%m-%dT%H:%M:%S')
+        out_file_name = re.sub('.csv', '', PurePath(csv_file).name) + '-' + timestamp + '.xml'
+        xml_file = PurePath(out_dir, out_file_name)
+
+        # try opening the XML file for writing and the CSV file
+        # for reading.
+        # the caller should handle the exception
+        with open(xml_file, 'w') as xmlfile, open(csv_file, 'r') as csvfile:
+
+            # write standard XML information at the top
+            xmlfile.write('<?xml version="1.0" encoding="UTF-8"?>\n')
+            xmlfile.write('<!DOCTYPE raml SYSTEM \'raml20.dtd\'>\n')
+            xmlfile.write('<raml version="2.0" xmlns="raml20.xsd">\n')
+            xmlfile.write('\t<cmData type="actual">\n')
+            xmlfile.write('\t' * 2 + '<header>\n')
+            xmlfile.write(
+                '\t' * 3 + '<log dateTime="' + timestamp + '" action="created" appInfo="ActualExporter">InternalValues are used</log>\n')
+            xmlfile.write('\t' * 2 + '</header>\n')
+
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+
+                # remove non-printable chars from dict keys
+                tmp_dict = {}
+                for key in row.keys():
+                    new_key = helperfunctions.removeNonPrintable(key)
+                    if not new_key == key:
+                        tmp_dict[key] = new_key
+
+                for old_key in tmp_dict.keys():
+                    row[tmp_dict[old_key]] = row.pop(old_key)
+
+                # the Managed Object node is of the form
+                # <managedObject class="MRBTS" version="FL16" distName="PLMN-PLMN/MRBTS-1111/LNBTS-1111" id="1111111">
+                mo_line = '\t' * 2 + '<managedObject class="' + row[
+                    'class'] + '" operation="' + self.operation + '" version="' + row['version'] + '" distName="' + row[
+                              'distName'] + '" id="' + row['id'] + '">\n'
+                xmlfile.write(mo_line)
+
+                # rest of the parameters
+                for parameter_name in row:
+                    if not parameter_name in mo_attributes:
+                        if row[parameter_name] == self.missing_val_str:
+                            # This parameter is not available for this managedObject
+                            continue
+                        elif '{}' in parameter_name:
+                            # a list
+                            xmlfile.write('\t' * 3 + '<list name="' + re.sub('{}', '', parameter_name) + '">\n')
+                            helperfunctions.listCsv2Xml(row[parameter_name], xmlfile)
+                            xmlfile.write('\t' * 3 + '</list>\n')
+                        else:
+                            # formal <p..> .. </p>
+                            xmlfile.write(
+                                '\t' * 3 + '<p name="' + parameter_name + '">' + row[parameter_name] + '</p>\n')
+
+                xmlfile.write('\t' * 2 + '</managedObject>\n')
+
+            # standard XML information
+            xmlfile.write('\t</cmData>\n')
+            xmlfile.write('</raml>\n')
 
     def __check_format(self):
         header = ''
