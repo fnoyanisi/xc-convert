@@ -10,7 +10,6 @@ from managedobject import List
 
 
 class XmlConverter(FileConverter):
-    missing_val_str = '#N/A'
     headers = {}    # 'managedObject class' : [list of available parameters]
     doc = None      # XML doc object
 
