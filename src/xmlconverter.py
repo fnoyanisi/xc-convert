@@ -102,7 +102,7 @@ class XmlConverter(FileConverter):
     def __read_list(self, node_p):
         """
         This function converts an XML list, whose structure is given below,
-        to List object
+        to a List object
 
          list name='....'
            |
@@ -137,6 +137,9 @@ class XmlConverter(FileConverter):
                     else:
                         # unknown node type, skip
                         pass
+            elif item.nodeName == 'p':
+                for item_p in item.childNodes:
+                    mo_list.add_property("", item_p.data)
         return mo_list
 
 

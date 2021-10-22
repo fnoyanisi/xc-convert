@@ -25,7 +25,8 @@ class List(XmlEntry):
         for key,val in self.propertyValues.items():
             if '{}' not in key:
                 # normal entry
-                s = s + key + ':' + val + ';'
+                sep = ':' if len(key) > 0 else ''
+                s = s + key + sep + val + ';'
             else:
                 # nested list
                 s = s + key + str(val)
