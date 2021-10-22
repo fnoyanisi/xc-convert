@@ -150,7 +150,7 @@ class CsvConverter(FileConverter):
         :param raw_str: string value
         :return: generated string for the list structure
         """
-        s = ""
+        s = ''
 
         # just in case there is nay whitespace characters in the input string
         trimmed = re.sub(' ','',raw_str)
@@ -159,9 +159,15 @@ class CsvConverter(FileConverter):
             # tmp has param1=123;param2=456;param3=789 format
             tmp = re.sub('[{}]','',list_item)
 
-            s.join('\t'*4 + '<list>\n')
-            for i in tmp.split(';'):
-                p,v = i.split(':')
-                s.join('\t'*5 + '<p name="' + p + '">' + v + '</p>\n')
-            s.join('\t'*4 + '</list>\n')
+            if ':' in tmp:
+                # so, we have a normal list with key:value pairs
+                s = s.join('\t'*4 + '<list>\n')
+                for i in tmp.split(';'):
+                    p,v = i.split(':')
+                    s = s.join('\t'*5 + '<p name="' + p + '">' + v + '</p>\n')
+                s = s.join('\t'*4 + '</list>\n')
+            else:
+                # just values within <p>...</p> tags
+                s = s.join('\t'*5 + '<p>' + tmp + '</p>\n')
+
         return s
