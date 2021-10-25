@@ -8,6 +8,7 @@ _xc-convert_ is developed by mailto:fnoyanisi@yahoo.com[Fehmi Noyan ISI]
 * *version 0.6 (beta) - (October 2021)*
 ** Added run.sh into the main repo 
 ** Using Python classes (OOP)
+** GUI changes
 
 * *version 0.5.1 (beta) - (July 2021)*
 ** Fixed an issue causing the script to reject legit CSV files
