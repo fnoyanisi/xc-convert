@@ -1,14 +1,17 @@
 == About xc-convert 
 
-_xc-convert_ is a simple utility to convert Nokia system generated XML files in to CSV (Comma Seperated Values) files and vice versa.
+_xc-convert_ is a simple utility tool to convert Nokia system generated XML files in to CSV files and vice versa.
 
 _xc-convert_ is developed by mailto:fnoyanisi@yahoo.com[Fehmi Noyan ISI]
 
 == Version History
-* *version 0.5.1 (beta) - (July 2021 - October 2021)*
+* *version 0.6 (beta) - (October 2021)*
+** Added run.sh into the main repo 
+** Using Python classes (OOP)
+
+* *version 0.5.1 (beta) - (July 2021)*
 ** Fixed an issue causing the script to reject legit CSV files
 ** Added run.bat into the main repo 
-** Using Python classes (OOP)
 
 * *version 0.5 (beta) - (Dec 2017)*
 ** Added the "operation" type selection for CSV to XML conversion
