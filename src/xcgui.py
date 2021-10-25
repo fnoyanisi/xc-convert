@@ -24,19 +24,20 @@ class XcGuiApplication:
         self.top = top
         top.wm_title('xc-converter ' + self.version)
         top.resizable(width=False, height=False)
-        # top.geometry('{}x{}'.format(400, 280))
 
         # Logo & Header
         self.logo_frame = Frame(top)
         self.logo_frame.grid(row=0, column=0, padx=4, pady=5)
 
-        self.img_xml = PhotoImage(file='./img/img_xml.gif')
-        self.img_csv = PhotoImage(file='./img/img_csv.gif')
+        self.img_xml = PhotoImage(file='./img/xml.png')
+        self.img_arrows = PhotoImage(file='./img/arrows.png')
+        self.img_csv = PhotoImage(file='./img/csv.png')
         Label(self.logo_frame, image=self.img_xml).grid(row=0, column=0, sticky='ne')
-        Label(self.logo_frame, image=self.img_csv).grid(row=0, column=1, sticky='nw')
-        Label(self.logo_frame, text='Xml to Csv Converter ' + self.version, font=('bold')).grid(row=1, column=0,
+        Label(self.logo_frame, image=self.img_arrows).grid(row=0, column=1, sticky='n')
+        Label(self.logo_frame, image=self.img_csv).grid(row=0, column=2, sticky='nw')
+        Label(self.logo_frame, text='\nXml to Csv Converter ' + self.version, font=('bold')).grid(row=1, column=0,
                                                                                                 columnspan=2)
-        Label(self.logo_frame, text=('Simple file format conversion utility for Nokia OSS configration files.\n\n'
+        Label(self.logo_frame, text=('\nSimple file format conversion utility for Nokia OSS configration files.\n\n'
                                      'Please see the "About" section for the license information.')
               , wraplength=200, justify=LEFT).grid(row=2, column=0, columnspan=2)
 
@@ -121,7 +122,7 @@ class XcGuiApplication:
         about_label.grid(row=0, column=0, columnspan=2, sticky=W + E + N + S, padx=10, pady=10)
 
         try:
-            with open('../LICENSE') as licensefile:
+            with open('./LICENSE') as licensefile:
                 license_text = licensefile.read()
                 dialog_text = Text(about_dialog, borderwidth=3, relief="sunken")
                 dialog_text.insert(INSERT, license_text)
