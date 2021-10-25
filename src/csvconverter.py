@@ -33,12 +33,12 @@ class CsvConverter(FileConverter):
         now = datetime.datetime.now()
         timestamp = now.strftime('%Y-%m-%dT%H-%M-%S')
         out_file_name = re.sub('.csv', '', PurePath(csv_file).name) + '-' + timestamp + '.xml'
-        xml_file = PurePath(out_dir, out_file_name)
+        path_to_xml_file = PurePath(out_dir, out_file_name)
 
         # try opening the XML file for writing and the CSV file
         # for reading.
         # the caller should handle the exception
-        with open(xml_file, 'w') as xmlfile, open(csv_file, 'r') as csvfile:
+        with open(path_to_xml_file, 'w') as xmlfile, open(csv_file, 'r') as csvfile:
 
             # write standard XML information at the top
             xmlfile.write('<?xml version="1.0" encoding="UTF-8"?>\n')

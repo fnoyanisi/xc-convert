@@ -52,8 +52,9 @@ class XmlConverter(FileConverter):
         for mo_class in self.headers:
             # full path for the CSV file - append a date like 20210813 at the end
             now = datetime.datetime.now()
-            timestamp = now.strftime('%Y%m%d')
-            path_to_csv_file = PurePath(self.out_dir, mo_class + "_" + str(timestamp) + '.csv')
+            timestamp = now.strftime('%Y-%m-%dT%H-%M-%S')
+            out_file_name = mo_class + "-" + str(timestamp) + '.csv'
+            path_to_csv_file = PurePath(self.out_dir, out_file_name)
 
             # a header for the CSV file
             # add some additional attributes from managedObject node
