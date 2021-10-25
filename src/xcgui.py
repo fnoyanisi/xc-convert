@@ -150,7 +150,7 @@ class XcGuiApplication:
         if not (self.in_file and self.out_dir and self.conversion_type) or \
         (self.conversion_type == 'c2x' and self.csv_to_xml_operation.get() == 'none'):
             msg = 'Please make sure you have\n' \
-                  '  * Selected the type of operation\n' \
+                  '  * Selected the type of the operation\n' \
                   '  * Located the input file\n' \
                   '  * Specified an output directory\n'
             messagebox.showwarning("Missing Information", msg)
