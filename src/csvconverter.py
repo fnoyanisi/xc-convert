@@ -161,13 +161,13 @@ class CsvConverter(FileConverter):
 
             if ':' in tmp:
                 # so, we have a normal list with key:value pairs
-                s = s.join('\t'*4 + '<list>\n')
+                s = s + '\t'*4 + '<list>\n'
                 for i in tmp.split(';'):
                     p,v = i.split(':')
-                    s = s.join('\t'*5 + '<p name="' + p + '">' + v + '</p>\n')
-                s = s.join('\t'*4 + '</list>\n')
+                    s = s + '\t'*5 + '<p name="' + p + '">' + v + '</p>\n'
+                s = s + '\t'*4 + '</list>\n'
             else:
                 # just values within <p>...</p> tags
-                s = s.join('\t'*5 + '<p>' + tmp + '</p>\n')
+                s = s + '\t'*5 + '<p>' + tmp + '</p>\n'
 
         return s
