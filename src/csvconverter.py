@@ -4,7 +4,7 @@ from pathlib import PurePath
 import datetime
 import re
 import csv
-import helperfunctions
+import string
 
 
 class CsvConverter(FileConverter):
@@ -56,7 +56,7 @@ class CsvConverter(FileConverter):
                 # remove non-printable chars from dict keys
                 tmp_dict = {}
                 for key in row.keys():
-                    new_key = helperfunctions.removeNonPrintable(key)
+                    new_key = self.__removeNonPrintable(key)
                     if not new_key == key:
                         tmp_dict[key] = new_key
 
@@ -116,7 +116,7 @@ class CsvConverter(FileConverter):
         csv_columns = []
 
         # remove non-printable characters
-        header = helperfunctions.removeNonPrintable(header)
+        header = self.__removeNonPrintable(header)
 
         if not ',' in header:
             raise RuntimeError("Unsupported CSV format")
@@ -127,6 +127,10 @@ class CsvConverter(FileConverter):
         # and the CSV file has all the necessary fields in it
         if len(csv_columns) < len(required_columns) or required_columns != csv_columns[:len(required_columns)]:
             raise RuntimeError("Unsupported CSV format")
+
+    def __removeNonPrintable(self, str):
+        str = ''.join([x for x in str if x in string.printable])
+        return str
 
     def __generate_list(self, raw_str):
         """

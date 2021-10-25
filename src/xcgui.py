@@ -4,7 +4,8 @@ GUI Layout for xc-converter
 from tkinter import *
 from tkinter import filedialog
 from tkinter import messagebox
-from xcfunctions import *
+
+from pathlib import PurePath
 
 from xmlconverter import XmlConverter
 from csvconverter import CsvConverter
