@@ -35,7 +35,7 @@ class XcGuiApplication:
         Label(self.logo_frame, image=self.img_xml).grid(row=0, column=0, sticky='ne')
         Label(self.logo_frame, image=self.img_arrows).grid(row=0, column=1, sticky='n')
         Label(self.logo_frame, image=self.img_csv).grid(row=0, column=2, sticky='nw')
-        Label(self.logo_frame, text='\nXml to Csv Converter ' + self.version, font=('Helvetica 14 bold')).grid(row=1, column=0,
+        Label(self.logo_frame, text='\nXml to Csv Converter ' + self.version, font=('Helvetica 13 bold')).grid(row=1, column=0,
                                                                                                 columnspan=2)
         Label(self.logo_frame, text=('\nSimple file format conversion utility for Nokia OSS configration files.\n\n'
                                      'Please see the "About" section for the license information.')
