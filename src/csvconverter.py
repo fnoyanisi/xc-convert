@@ -165,11 +165,11 @@ class CsvConverter(FileConverter):
 
             if ':' in tmp:
                 # so, we have a normal list with key:value pairs
-                s = s + '\t'*4 + '<list>\n'
+                s = s + '\t'*4 + '<item>\n'
                 for i in tmp.split(';'):
                     p,v = i.split(':')
                     s = s + '\t'*5 + '<p name="' + p + '">' + v + '</p>\n'
-                s = s + '\t'*4 + '</list>\n'
+                s = s + '\t'*4 + '</item>\n'
             else:
                 # just values within <p>...</p> tags
                 s = s + '\t'*5 + '<p>' + tmp + '</p>\n'
