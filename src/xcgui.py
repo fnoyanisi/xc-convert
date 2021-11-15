@@ -15,7 +15,7 @@ class XcGuiApplication:
 
     # Initialize the GUI
     def __init__(self, top):
-        self.version = 'v0.6'
+        self.version = 'v0.6.1'
         self.in_file = None
         self.out_dir = None
         self.conversion_type = None
