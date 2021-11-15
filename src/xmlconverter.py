@@ -24,6 +24,7 @@ class XmlConverter(FileConverter):
         """
 
         self.out_dir = out_dir
+        self.headers = {}
 
         # step 1
         # create the headers dictionary
