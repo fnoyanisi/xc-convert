@@ -12,10 +12,23 @@ from csvconverter import CsvConverter
 
 class XcGuiApplication:
     """ GUI layout for xc-convert application """
+    version = ""
+
+    def read_version(self):
+        try:
+            with open("VERSION") as f:
+                self.version = f.readline()
+        except IOError as e:
+            messagebox.showerror("IO Error", "Error while opening the VERSION file")
+            exit(1)
+        except:
+            messagebox.showerror("Opps..", "Unknown error while processing the VERSION file")
+            exit(1)
 
     # Initialize the GUI
     def __init__(self, top):
-        self.version = 'v0.6.1'
+        self.read_version()
+
         self.in_file = None
         self.out_dir = None
         self.conversion_type = None
