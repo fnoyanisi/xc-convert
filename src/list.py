@@ -37,11 +37,10 @@ class List(XmlEntry):
                 sep = ':' if len(key) > 0 else ''
                 s = s + key + sep + val + ';'
 
-
         # do not add curly braces if the only thing in
         # the List is an item, which has its own curly
         # braces around it
         if has_item and len(self.propertyValues) == 1:
-            return s
+            return s[:-1]
         else:
             return '{' + s[:-1] + '}'
