@@ -1,3 +1,4 @@
+# class that converts a CSV file into an XML file
 from fileconverter import FileConverter
 from pathlib import PurePath
 

@@ -130,7 +130,7 @@ class XmlConverter(FileConverter):
         for item in node_p.childNodes:
             if item.nodeName == 'item':
                 item_node = self.__read_item(item)
-                mo_list.add_property("",item_node)
+                mo_list.add_property(item_node.name, item_node)
             elif item.nodeName == 'p':
                 for item_p in item.childNodes:
                     mo_list.add_property("", item_p.data)
