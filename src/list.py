@@ -23,17 +23,20 @@ class List(XmlEntry):
     def __str__(self):
         s = ''
         has_item = False
+        # key - name of the XmlEntry
+        # val - XmlEntry itself
         for key,val in self.propertyValues.items():
-            if key =='' :
-                s = str(val)
+            if val.type == XmlEntryType.ITEM:
+                s = s + str(val) + ';'
                 has_item = True
-            elif '{}' not in key:
+            elif val.type == XmlEntryType.LIST:
+                # nested list
+                s = s + key + str(val)
+            else:
                 # normal entry
                 sep = ':' if len(key) > 0 else ''
                 s = s + key + sep + val + ';'
-            else:
-                # nested list
-                s = s + key + str(val)
+
 
         # do not add curly braces if the only thing in
         # the List is an item, which has its own curly
