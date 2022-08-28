@@ -9,6 +9,7 @@ from pathlib import PurePath
 
 from xmlconverter import XmlConverter
 from csvconverter import CsvConverter
+from updatemngr import UpdateManager
 
 class XcGuiApplication:
     """ GUI layout for xc-convert application """
@@ -17,7 +18,7 @@ class XcGuiApplication:
     def read_version(self):
         try:
             with open("VERSION") as f:
-                self.version = f.readline()
+                self.version = f.readline().strip()
         except IOError as e:
             messagebox.showerror("IO Error", "Error while opening the VERSION file")
             exit(1)
@@ -99,6 +100,10 @@ class XcGuiApplication:
         Button(self.bottom_frame, text='Run', command=self.Run, width=60).pack(fill=X, pady=5)
         Button(self.bottom_frame, text='About', command=self.AboutDialog).pack(fill=X, pady=5)
         Button(self.bottom_frame, text='Quit', command=top.destroy).pack(fill=X, pady=5)
+
+        # check for updates
+        um = UpdateManager()
+        um.check_for_updates(self.version, False)
 
     # The selection result from opt1 and opt2 radio buttons
     # Determines the type of file conversion to be done, XML to CSV to CSV to XML

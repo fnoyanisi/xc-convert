@@ -7,6 +7,7 @@ _xc-convert_ is developed by mailto:fnoyanisi@yahoo.com[Fehmi Noyan ISI]
 == Version History
 * *version 0.7 (beta) - (August 2022)*
 ** Added the support for unnamed structures
+** Checking for updates at start up now
 
 * *version 0.6.1 (beta) - (November 2021)*
 ** Added VERSION file
