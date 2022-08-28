@@ -6,7 +6,8 @@ import xml
 
 from fileconverter import FileConverter
 from managedobject import ManagedObject
-from managedobject import List
+from list import List
+from item import Item
 
 
 class XmlConverter(FileConverter):
@@ -99,67 +100,80 @@ class XmlConverter(FileConverter):
 
                         # write the object into the CSV file
                         writer.writerow(mo.get_values())
-                        # writer.writerow(mo.propertyValues)
 
+    """
+    This function converts an XML list, whose structure is given below,
+    to a List object
+
+     list name='....'
+       |
+       +--item1
+       |   |
+       |   +--p1 name='...'
+       |   |
+       |   +--p2 name='...'
+       |
+       +--item2
+       |   |
+       |   +--p1 name='...'
+       |   |
+       |   +--p2 name='...'
+
+    :param node_p: valid XML node
+    :return: a List object representing the list entry in the XML file
+    """
     def __read_list(self, node_p):
-        """
-        This function converts an XML list, whose structure is given below,
-        to a List object
-
-         list name='....'
-           |
-           +--item1
-           |   |
-           |   +--p1 name='...'
-           |   |
-           |   +--p2 name='...'
-           |
-           +--item2
-           |   |
-           |   +--p1 name='...'
-           |   |
-           |   +--p2 name='...'
-
-        :param node_p: valid XML node
-        :return: a List object representing the list entry in the XML file
-        """
         mo_list = List(node_p.getAttribute("name"))
 
         # string are immutable, so use a list, and then join()
         for item in node_p.childNodes:
             if item.nodeName == 'item':
-                for item_p in item.childNodes:
-                    if item_p.nodeName == 'p':
-                        # normal property
-                        mo_list.add_property(item_p.getAttribute("name"), item_p.firstChild.data)
-                    elif item_p.nodeName == 'list':
-                        # nested list
-                        inner_list = self.__read_list(item_p)
-                        mo_list.add_property(inner_list.name, inner_list)
-                    else:
-                        # unknown node type, skip
-                        pass
+                item_node = self.__read_item(item)
+                mo_list.add_property("",item_node)
             elif item.nodeName == 'p':
                 for item_p in item.childNodes:
                     mo_list.add_property("", item_p.data)
         return mo_list
 
+    """
+    Iterates over an "item" node and creates the relevant
+    object
+            +--item1
+            |
+            +--p1 name='...'
+            |
+            +--p2 name='...'
+    """
+    def __read_item(self, node_p):
+        item = Item()
+        for item_elem in node_p.childNodes:
+            if item_elem.nodeName == 'p':
+                # normal property
+                item.add_property(item_elem.getAttribute("name"), item_elem.firstChild.data)
+            elif item_elem.nodeName == 'list':
+                # nested list
+                inner_list = self.__read_list(item_elem)
+                item.add_property(inner_list.name, inner_list)
+            else:
+                # unknown node type, skip
+                pass
+        return item
 
+    """
+    Validate the XML file format
+
+    This method checks whether the inout XML file has a supported file format.
+    Expected XML DOM :
+    raml
+      |
+      +--cmData
+           |
+           +--managedObject
+
+    :param xml_doc: a valid XML document object returned by minidom.parse()
+    :return: True if the file format is valid, False otherwise
+    """
     def __check_format(self):
-        """
-        Validate the XML file format
-
-        This method checks whether the inout XML file has a supported file format.
-        Expected XML DOM :
-        raml
-          |
-          +--cmData
-               |
-               +--managedObject
-
-        :param xml_doc: a valid XML document object returned by minidom.parse()
-        :return: True if the file format is valid, False otherwise
-        """
         # check 1
         # can the XML parser work on the file?
         try:

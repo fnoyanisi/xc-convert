@@ -27,7 +27,8 @@ class XcGuiApplication:
 
     # Initialize the GUI
     def __init__(self, top):
-        self.read_version()
+    # FIXME
+    #    self.read_version()
 
         self.in_file = None
         self.out_dir = None
@@ -42,17 +43,18 @@ class XcGuiApplication:
         self.logo_frame = Frame(top)
         self.logo_frame.grid(row=0, column=0, padx=4, pady=5)
 
-        self.img_xml = PhotoImage(file='./img/xml.png')
-        self.img_arrows = PhotoImage(file='./img/arrows.png')
-        self.img_csv = PhotoImage(file='./img/csv.png')
-        Label(self.logo_frame, image=self.img_xml).grid(row=0, column=0, sticky='ne')
-        Label(self.logo_frame, image=self.img_arrows).grid(row=0, column=1, sticky='n')
-        Label(self.logo_frame, image=self.img_csv).grid(row=0, column=2, sticky='nw')
-        Label(self.logo_frame, text='\nXml to Csv Converter ' + self.version, font=('Helvetica 13 bold')).grid(row=1, column=0,
-                                                                                                columnspan=2)
-        Label(self.logo_frame, text=('\nSimple file format conversion utility for Nokia OSS configration files.\n\n'
-                                     'Please see the "About" section for the license information.')
-              , wraplength=200, justify=LEFT).grid(row=2, column=0, columnspan=2)
+        # FIXME
+        # self.img_xml = PhotoImage(file='./img/xml.png')
+        # self.img_arrows = PhotoImage(file='./img/arrows.png')
+        # self.img_csv = PhotoImage(file='./img/csv.png')
+        # Label(self.logo_frame, image=self.img_xml).grid(row=0, column=0, sticky='ne')
+        # Label(self.logo_frame, image=self.img_arrows).grid(row=0, column=1, sticky='n')
+        # Label(self.logo_frame, image=self.img_csv).grid(row=0, column=2, sticky='nw')
+        # Label(self.logo_frame, text='\nXml to Csv Converter ' + self.version, font=('Helvetica 13 bold')).grid(row=1, column=0,
+        #                                                                                        columnspan=2)
+        #Label(self.logo_frame, text=('\nSimple file format conversion utility for Nokia OSS configration files.\n\n'
+        #                            'Please see the "About" section for the license information.')
+        #      , wraplength=200, justify=LEFT).grid(row=2, column=0, columnspan=2)
 
         # Conversion type, input file, output folder selection
         self.config_frame = Frame(top)
