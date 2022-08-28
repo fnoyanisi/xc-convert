@@ -4,10 +4,11 @@ from enum import Enum
 
 
 # enumeration type to distinguish different types of XmlEntries
-class Type(Enum):
+class XmlEntryType(Enum):
     PARAMETER = 1
     ITEM = 2
     LIST = 3
+    MANAGEDOBJECT = 4
 
 # n -   name of the XML entry. For parameters, this is the internal name of the
 #       parameter. For lists, this is the internal name of the list appended with
