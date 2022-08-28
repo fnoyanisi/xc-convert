@@ -157,15 +157,15 @@ class CsvConverter(FileConverter):
         """
         s = ''
 
-        # just in case there is nay whitespace characters in the input string
+        # just in case there is any whitespace characters in the input string
         trimmed = re.sub(' ','',raw_str)
-        for list_item in trimmed.split('}{'):
+        for list_item in trimmed.split('};{'):
             # remove any curly brackets
             # tmp has param1=123;param2=456;param3=789 format
             tmp = re.sub('[{}]','',list_item)
 
             if ':' in tmp:
-                # so, we have a normal list with key:value pairs
+                # we have a normal list with key:value pairs
                 s = s + '\t'*4 + '<item>\n'
                 for i in tmp.split(';'):
                     p,v = i.split(':')
