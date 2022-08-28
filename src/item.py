@@ -12,12 +12,18 @@ represents an item entry in an XML DOM of the form
        </list>
 """
 from xmlentry import XmlEntry
+from xmlentry import XmlEntryType
+
+import time
 
 class Item(XmlEntry):
     def __init__(self):
-        # "item" nodes do not have a name
-        # hence not passing an explicit name string
-        super().__init__('{}')
+        # "item" nodes do not have a name but
+        # we assign a name of the form "item#...."
+        # to distinguish individual items from one
+        # another internally
+        n = '{item#' + str(time.time()) + '}'
+        super().__init__(n, XmlEntryType.ITEM)
 
     def __str__(self):
         s = ''
