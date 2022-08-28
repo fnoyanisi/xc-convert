@@ -75,7 +75,8 @@ class XmlConverter(FileConverter):
                 writer.writeheader()
 
                 # OK, now iterate through the managedObject list and write a separate CSV file for
-                # each one. So, if the inout XML includes data for different managedObject classes,
+                # each one.
+                # If the input XML includes data for different managedObject classes,
                 # a separate CSV file will be created for each one of them
                 for mo_entry in list_of_managedObjects:
                     if mo_entry.getAttribute("class") == mo_class:
