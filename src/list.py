@@ -12,12 +12,13 @@ represents a list entry in an XML DOM of the form
        </list>
 """
 from xmlentry import XmlEntry
+from xmlentry import XmlEntryType
 
 class List(XmlEntry):
     def __init__(self, n):
         # name of a "list" is appended with a "{}"
         # to distinguish it from normal parameter-value pairs
-        super().__init__(n + '{}')
+        super().__init__(n + '{}', XmlEntryType.LIST)
 
     def __str__(self):
         s = ''

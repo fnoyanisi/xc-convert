@@ -14,27 +14,12 @@ represents a managedObject entry in an XML file of the form
      </managedObject>
 """
 from xmlentry import XmlEntry
-
-class List(XmlEntry):
-    def __init__(self, n):
-        super().__init__(n + '{}')
-
-    def __str__(self):
-        s = ''
-        for key,val in self.propertyValues.items():
-            if '{}' not in key:
-                # normal entry
-                sep = ':' if len(key) > 0 else ''
-                s = s + key + sep + val + ';'
-            else:
-                # nested list
-                s = s + key + str(val)
-        return '{' + s[:-1] + '}'
+from xmlentry import XmlEntryType
 
 class ManagedObject(XmlEntry):
     # constructor
     def __init__(self, n, v, d, i):
-        super().__init__(n)
+        super().__init__(n, XmlEntryType.MANAGEDOBJECT)
         self.version = v
         self.distName = d
         self.id = i
