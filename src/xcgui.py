@@ -112,18 +112,26 @@ class XcGuiApplication:
         elif self.conversion_type == 'x2c':
             self.option_menu.config(state = DISABLED)
 
+    # trims the string "s" if its length > w and
+    # replaces the last three characters with "..."
+    def TrimStr(selfself, s, w):
+        if len(s) > w:
+            return s[:w-3] + "..."
+        else:
+            return s
+
     # File chooser for the input file
     def FileChooserDialog(self):
         f = filedialog.askopenfilename()
         if len(f) != 0:
-            self.in_file_label.config(text=PurePath(f).name)
+            self.in_file_label.config(text=self.TrimStr(PurePath(f).name, 30))
             self.in_file = f
 
     # Directory choose for the destination location
     def DirChooserDialog(self):
         d = filedialog.askdirectory()
         if len(d) != 0:
-            self.out_dir_label.config(text=PurePath(d).name)
+            self.out_dir_label.config(text=self.TrimStr(PurePath(d).name, 30))
             self.out_dir = d
 
     def CheckForUpdates(self):
