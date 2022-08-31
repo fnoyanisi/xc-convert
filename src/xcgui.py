@@ -98,12 +98,9 @@ class XcGuiApplication:
         self.bottom_frame.grid(row=1, column=0, columnspan=2, padx=2, pady=2)
 
         Button(self.bottom_frame, text='Run', command=self.Run, width=60).pack(fill=X, pady=5)
+        Button(self.bottom_frame, text='Check for Updates', command=self.CheckForUpdates).pack(fill=X, pady=5)
         Button(self.bottom_frame, text='About', command=self.AboutDialog).pack(fill=X, pady=5)
         Button(self.bottom_frame, text='Quit', command=top.destroy).pack(fill=X, pady=5)
-
-        # check for updates
-        um = UpdateManager()
-        um.check_for_updates(self.version, False)
 
     # The selection result from opt1 and opt2 radio buttons
     # Determines the type of file conversion to be done, XML to CSV to CSV to XML
@@ -128,6 +125,11 @@ class XcGuiApplication:
         if len(d) != 0:
             self.out_dir_label.config(text=PurePath(d).name)
             self.out_dir = d
+
+    def CheckForUpdates(self):
+        # check for updates
+        um = UpdateManager()
+        um.check_for_updates(self.version, False)
 
     # Displays the license information
     def AboutDialog(self):
