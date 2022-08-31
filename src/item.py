@@ -14,15 +14,18 @@ represents an item entry in an XML DOM of the form
 from xmlentry import XmlEntry
 from xmlentry import XmlEntryType
 
-import time
+import random
 
 class Item(XmlEntry):
     def __init__(self):
         # "item" nodes do not have a name but
         # we assign a name of the form "item#...."
         # to distinguish individual items from one
-        # another internally
-        n = '{item#' + str(time.time()) + '}'
+        # another. It's just an internal value that is
+        # not used anywhere else
+        # current implementation uses a random int with
+        # a slight but non-zero chance of collision
+        n = '{item#' + str(random.randint(0, 1000000000)) + '}'
         super().__init__(n, XmlEntryType.ITEM)
 
     def __str__(self):
