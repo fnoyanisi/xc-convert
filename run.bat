@@ -2,4 +2,5 @@
 echo DO NOT CLOSE THIS WINDOW!
 echo.
 echo starting xc-convert...
-"C:\Program Files\Anaconda3\python.exe" src\xc-convert.py
+call "C:\Program Files\Anaconda3\condabin\activate.bat" activate 
+python src\xc-convert.py
