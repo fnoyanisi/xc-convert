@@ -1,7 +1,9 @@
 # class to manage the automatic updates
 import urllib.request
 from urllib.error import URLError
+from urllib.error import HTTPError
 from tkinter import messagebox
+from socket import timeout
 
 
 class UpdateManager:
@@ -20,18 +22,29 @@ class UpdateManager:
 
         # read the online version info
         try:
-            response = urllib.request.urlopen(self.updateUrl)
-            data = response.read()
-            online_version = data.decode('utf-8')
-        except URLError as e:
-            messagebox.showerror("Network Error", str(e.reason))
+            response = urllib.request.urlopen(self.updateUrl, timeout=1)
+        except NameError:
+            messagebox.showerror("Update Manager Network Error", "Cannot open the update URL")
             return
+        except URLError as e:
+            messagebox.showerror("Update Manager URL Error", str(e.reason))
+            return
+        except HTTPError as e:
+            messagebox.showerror("Update Manager HTTP Error", str(e.reason))
+            return
+        except timeout:
+            messagebox.showerror("Update Manager Network Error", "Request timeout")
+            return
+
+        data = response.read()
+        online_version = data.decode('utf-8')
 
         # compare the version information
         # do nothing if the current version is
         cmp = self.__compare_version_info(online_version, local_version)
         if cmp == -1:
-            messagebox.showerror("Wrong version information", "Please make sure your version information is correct : " + str(local_version))
+            messagebox.showerror("Wrong version information",
+                                 "Please make sure your version information is correct : " + str(local_version))
         elif cmp == 1:
             msg1 = "A new version of xc-convert is available. Please download it from " + self.downloadUrl
             msg2 = "Current version: " + str(local_version)
@@ -39,7 +52,6 @@ class UpdateManager:
             messagebox.showinfo("A New Version is Available", msg1 + "\n\n" + msg2 + "\n" + msg3)
         elif cmp == 0 and not silent_mode:
             messagebox.showinfo("You are up to date", "There is no updates for version " + str(local_version))
-
 
     # compares two version information of the form
     # Major.Minor.Patch
