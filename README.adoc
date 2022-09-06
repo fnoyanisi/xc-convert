@@ -5,6 +5,9 @@ _xc-convert_ is a simple utility tool to convert Nokia system generated XML file
 _xc-convert_ is developed by mailto:fnoyanisi@yahoo.com[Fehmi Noyan ISI]
 
 == Version History
+* *version 0.7.2 (beta) - (September 2022)*
+** Bug fixes
+
 * *version 0.7.1 (beta) - (August 2022)*
 ** Moved to a manual update checker to avoid proxy issues
 ** GUI changes
