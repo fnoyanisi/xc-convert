@@ -14,10 +14,11 @@ from updatemngr import UpdateManager
 class XcGuiApplication:
     """ GUI layout for xc-convert application """
     version = ""
+    p = "../"
 
     def read_version(self):
         try:
-            with open("VERSION") as f:
+            with open(self.p + "VERSION") as f:
                 self.version = f.readline().strip()
         except IOError as e:
             messagebox.showerror("IO Error", "Error while opening the VERSION file")
@@ -43,9 +44,9 @@ class XcGuiApplication:
         self.logo_frame = Frame(top)
         self.logo_frame.grid(row=0, column=0, padx=4, pady=5)
 
-        self.img_xml = PhotoImage(file='./img/xml.png')
-        self.img_arrows = PhotoImage(file='./img/arrows.png')
-        self.img_csv = PhotoImage(file='./img/csv.png')
+        self.img_xml = PhotoImage(file=self.p + 'img/xml.png')
+        self.img_arrows = PhotoImage(file=self.p + 'img/arrows.png')
+        self.img_csv = PhotoImage(file=self.p + 'img/csv.png')
         Label(self.logo_frame, image=self.img_xml).grid(row=0, column=0, sticky='ne')
         Label(self.logo_frame, image=self.img_arrows).grid(row=0, column=1, sticky='n')
         Label(self.logo_frame, image=self.img_csv).grid(row=0, column=2, sticky='nw')
@@ -150,7 +151,7 @@ class XcGuiApplication:
         about_label.grid(row=0, column=0, columnspan=2, sticky=W + E + N + S, padx=10, pady=10)
 
         try:
-            with open('./LICENSE') as licensefile:
+            with open(self.p + 'LICENSE') as licensefile:
                 license_text = licensefile.read()
                 dialog_text = Text(about_dialog, borderwidth=3, relief="sunken")
                 dialog_text.insert(INSERT, license_text)
