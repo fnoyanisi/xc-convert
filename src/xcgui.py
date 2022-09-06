@@ -44,9 +44,9 @@ class XcGuiApplication:
         self.logo_frame = Frame(top)
         self.logo_frame.grid(row=0, column=0, padx=4, pady=5)
 
-        self.img_xml = PhotoImage(file=self.p + 'img/xml.png')
-        self.img_arrows = PhotoImage(file=self.p + 'img/arrows.png')
-        self.img_csv = PhotoImage(file=self.p + 'img/csv.png')
+        self.img_xml = PhotoImage(file=self.p + 'img/xml.gif')
+        self.img_arrows = PhotoImage(file=self.p + 'img/arrows.gif')
+        self.img_csv = PhotoImage(file=self.p + 'img/csv.gif')
         Label(self.logo_frame, image=self.img_xml).grid(row=0, column=0, sticky='ne')
         Label(self.logo_frame, image=self.img_arrows).grid(row=0, column=1, sticky='n')
         Label(self.logo_frame, image=self.img_csv).grid(row=0, column=2, sticky='nw')
