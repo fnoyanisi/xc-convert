@@ -33,6 +33,11 @@ class Item(XmlEntry):
         for key,val in self.propertyValues.items():
             if '{}' not in key:
                 # normal entry
+                # if the name/key has "#rand_name#" in it,
+                # ignore it
+                if "#rand_name#" in key:
+                    key = ""
+
                 sep = ':' if len(key) > 0 else ''
                 s = s + key + sep + val + ';'
             else:

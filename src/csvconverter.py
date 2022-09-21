@@ -173,6 +173,20 @@ class CsvConverter(FileConverter):
                 s = s + '\t'*4 + '</item>\n'
             else:
                 # just values within <p>...</p> tags
-                s = s + '\t'*5 + '<p>' + tmp + '</p>\n'
+                # some values may be of the form
+                # <list ...>
+                #   <p>xxxx</p>
+                #   <p>yyyy</p>
+                # </list>
+                # and these are captured by the "#rand_name#" placeholder when
+                # converting the XML to CSV. These values will appear as
+                # xxxx;yyyy
+                # in the CSV file, which needs further processing before writing
+                if ";" in tmp:
+                    arr = tmp.split(";")
+                    for a in arr:
+                        s = s + '\t'*5 + '<p>' + a + '</p>\n'
+                else:
+                    s = s + '\t'*5 + '<p>' + tmp + '</p>\n'
 
         return s

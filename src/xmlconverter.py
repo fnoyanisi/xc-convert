@@ -3,6 +3,7 @@ import csv, datetime
 from xml.dom import minidom
 
 import xml
+import random
 
 from fileconverter import FileConverter
 from managedobject import ManagedObject
@@ -133,7 +134,10 @@ class XmlConverter(FileConverter):
                 mo_list.add_property(item_node.name, item_node)
             elif item.nodeName == 'p':
                 for item_p in item.childNodes:
-                    mo_list.add_property("", item_p.data)
+                    # use a random name for parameter values without a name
+                    # to avoid consecutive values overwriting on each other
+                    n = "#rand_name#" + str(random.randint(0, 1000000000))
+                    mo_list.add_property(n, item_p.data)
         return mo_list
 
     """
