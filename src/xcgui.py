@@ -14,7 +14,7 @@ from updatemngr import UpdateManager
 class XcGuiApplication:
     """ GUI layout for xc-convert application """
     version = ""
-    p = "../"
+    p = "./"
 
     def read_version(self):
         try:
