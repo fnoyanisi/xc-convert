@@ -1,3 +1,7 @@
+"""
+Converts an XML file to
+    - CSV
+"""
 from pathlib import PurePath
 import csv, datetime
 from xml.dom import minidom
