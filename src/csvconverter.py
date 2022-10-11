@@ -4,6 +4,7 @@ Converts an CSV file to
 """
 from fileconverter import FileConverter
 from pathlib import PurePath
+from dbmanager import DBManager
 
 import datetime
 import re
@@ -12,8 +13,14 @@ import string
 
 
 class CsvConverter(FileConverter):
+    db = None
+    table_name = ""
     def __init__(self, f):
         super().__init__(f)
+
+        # each CSV file is represented by a table in the DB
+        self.table_name = PurePath(self.file_path).name.replace('.','_').replace('-','_')
+        self.db = DBManager()
         self.operation = 'none'
         self.__check_format()  # format validation
 
@@ -39,11 +46,12 @@ class CsvConverter(FileConverter):
         out_file_name = re.sub('.csv', '', PurePath(csv_file).name) + '-' + timestamp + '.xml'
         path_to_xml_file = PurePath(out_dir, out_file_name)
 
+        self.__read_csv_into_db(self.table_name)
+
         # try opening the XML file for writing and the CSV file
         # for reading.
         # the caller should handle the exception
-        with open(path_to_xml_file, 'w') as xmlfile, open(csv_file, 'r') as csvfile:
-
+        with open(path_to_xml_file, 'w') as xmlfile:
             # write standard XML information at the top
             xmlfile.write('<?xml version="1.0" encoding="UTF-8"?>\n')
             xmlfile.write('<!DOCTYPE raml SYSTEM \'raml20.dtd\'>\n')
@@ -54,7 +62,7 @@ class CsvConverter(FileConverter):
                 '\t' * 3 + '<log dateTime="' + now.strftime('%Y-%m-%dT%H:%M:%S') + '" action="created" appInfo="ActualExporter">InternalValues are used</log>\n')
             xmlfile.write('\t' * 2 + '</header>\n')
 
-            reader = csv.DictReader(csvfile)
+            reader = self.db.get_rows(self.table_name)
             for row in reader:
 
                 # remove non-printable chars from dict keys
@@ -80,7 +88,7 @@ class CsvConverter(FileConverter):
                         if row[parameter_name] == self.missing_val_str:
                             # This parameter is not available for this managedObject
                             continue
-                        elif '{}' in parameter_name:
+                        elif '_CompactItem' in parameter_name:
                             # a list
                             xmlfile.write('\t' * 3 + '<list name="' + re.sub('{}', '', parameter_name) + '">\n')
                             xmlfile.write(self.__generate_list(row[parameter_name]))
@@ -95,6 +103,18 @@ class CsvConverter(FileConverter):
             # standard XML information
             xmlfile.write('\t</cmData>\n')
             xmlfile.write('</raml>\n')
+
+    # read the CSV file into the database
+    def __read_csv_into_db(self, table_name):
+        csv_file = self.file_path
+        with open(csv_file, 'r') as csvfile:
+            # DictReader provides a convenient API to read the CSV file
+            # each returned row is in the form of
+            # row[header] = value
+            reader = csv.DictReader(csvfile)
+            self.db.create_table(table_name, reader.fieldnames)
+            self.db.insert_values(table_name, reader)
+
 
     def __check_format(self):
         header = ''
