@@ -4,7 +4,7 @@ A class to manage the database operations
 import sqlite3
 
 
-class DBManager():
+class DBManager:
     cursor = None
     conn = None
 
