@@ -1,55 +1,33 @@
-"""
-Converts an CSV file to
-    - XML
-"""
-from fileconverter import FileConverter
+from fileexporter import FileExporter
 from pathlib import PurePath
-from dbmanager import DBManager
 
-import datetime
 import re
-import csv
-import string
+import datetime
+import utils
 
 
-class CsvConverter(FileConverter):
-    db = None
-    table_name = ""
-    def __init__(self, f):
-        super().__init__(f)
+# o - path to the output directory
+# d - valid DBManager instance
+class XmlExporter(FileExporter):
+    def __init__(self, o, d):
+        super().__init__(o, d)
 
-        # each CSV file is represented by a table in the DB
-        self.table_name = PurePath(self.file_path).name.replace('.','_').replace('-','_')
-        self.db = DBManager()
-        self.operation = 'none'
-        self.__check_format()  # format validation
+        self.missing_val_str = '#N/A'
+        self.out_dir = o
+        self.dbm = d
 
-    def set_operation(self, o):
-        if not o in ['update','create','delete']:
-            raise RuntimeError("Invalid operation type: " + str(o))
-        self.operation = o
-
-    def convert(self, out_dir):
-        """
-        This function converts a valid CSV file to an XML
-        """
-
-        if self.operation == 'none':
+    def write(self, table_name):
+        if self.operation is None:
             raise RuntimeError("Please select the operation type")
 
-        self.out_dir = out_dir
-        csv_file = self.file_path
         mo_attributes = ['class', 'version', 'distName', 'id']
 
         now = datetime.datetime.now()
         timestamp = now.strftime('%Y-%m-%dT%H-%M-%S')
-        out_file_name = re.sub('.csv', '', PurePath(csv_file).name) + '-' + timestamp + '.xml'
-        path_to_xml_file = PurePath(out_dir, out_file_name)
+        out_file_name = table_name.rsplit('_', 1)[0] + '_' + timestamp + '.xml'
+        path_to_xml_file = PurePath(self.out_dir, out_file_name)
 
-        self.__read_csv_into_db(self.table_name)
-
-        # try opening the XML file for writing and the CSV file
-        # for reading.
+        # try opening the XML file for writing the data
         # the caller should handle the exception
         with open(path_to_xml_file, 'w') as xmlfile:
             # write standard XML information at the top
@@ -59,16 +37,18 @@ class CsvConverter(FileConverter):
             xmlfile.write('\t<cmData type="actual">\n')
             xmlfile.write('\t' * 2 + '<header>\n')
             xmlfile.write(
-                '\t' * 3 + '<log dateTime="' + now.strftime('%Y-%m-%dT%H:%M:%S') + '" action="created" appInfo="ActualExporter">InternalValues are used</log>\n')
+                '\t' * 3 + '<log dateTime="' + now.strftime('%Y-%m-%dT%H:%M:%S') +
+                '" action="created" appInfo="ActualExporter">InternalValues are used</log>\n'
+            )
             xmlfile.write('\t' * 2 + '</header>\n')
 
-            reader = self.db.get_rows(self.table_name)
+            reader = self.dbm.get_rows(table_name)
             for row in reader:
 
                 # remove non-printable chars from dict keys
                 tmp_dict = {}
                 for key in row.keys():
-                    new_key = self.__removeNonPrintable(key)
+                    new_key = utils.remove_non_printable(key)
                     if not new_key == key:
                         tmp_dict[key] = new_key
 
@@ -104,59 +84,8 @@ class CsvConverter(FileConverter):
             xmlfile.write('\t</cmData>\n')
             xmlfile.write('</raml>\n')
 
-    # read the CSV file into the database
-    def __read_csv_into_db(self, table_name):
-        csv_file = self.file_path
-        with open(csv_file, 'r') as csvfile:
-            # DictReader provides a convenient API to read the CSV file
-            # each returned row is in the form of
-            # row[header] = value
-            reader = csv.DictReader(csvfile)
-            self.db.create_table(table_name, reader.fieldnames)
-            self.db.insert_values(table_name, reader)
-
-
-    def __check_format(self):
-        header = ''
-
-        # check 1
-        # open file
-        try:
-            with open(self.file_path) as csvfile:
-                header = csvfile.readline()
-        except OSError as e:
-            raise RuntimeError(e.strerror)
-
-        # check 2
-        # empty header
-        if len(header) == 0:
-            raise RuntimeError("Unsupported CSV format")
-
-        # check 3
-        # required columns
-        # these are the attributes (or column names in the CSV file) that
-        # any CVS file has to have
-        required_columns = ['class', 'version', 'distName', 'id']
-        csv_columns = []
-
-        # remove non-printable characters
-        header = self.__removeNonPrintable(header)
-
-        if not ',' in header:
-            raise RuntimeError("Unsupported CSV format")
-        else:
-            csv_columns = header.split(',')
-
-        # make sure csv_values is not shorter than test_values
-        # and the CSV file has all the necessary fields in it
-        if len(csv_columns) < len(required_columns) or required_columns != csv_columns[:len(required_columns)]:
-            raise RuntimeError("Unsupported CSV format")
-
-    def __removeNonPrintable(self, str):
-        str = ''.join([x for x in str if x in string.printable])
-        return str
-
-    def __generate_list(self, raw_str):
+    @staticmethod
+    def __generate_list(raw_str):
         """
         This functions converts a string which is of {param1=123;param2=456}{param1=789;param2=000}
         format into given XML tree
@@ -181,11 +110,11 @@ class CsvConverter(FileConverter):
         s = ''
 
         # just in case there is any whitespace characters in the input string
-        trimmed = re.sub(' ','',raw_str)
+        trimmed = re.sub(' ', '', raw_str)
         for list_item in trimmed.split('};{'):
             # remove any curly brackets
             # tmp has param1=123;param2=456;param3=789 format
-            tmp = re.sub('[{}]','',list_item)
+            tmp = re.sub('[{}]', '', list_item)
 
             if ':' in tmp:
                 # we have a normal list with key:value pairs
@@ -211,5 +140,4 @@ class CsvConverter(FileConverter):
                         s = s + '\t'*5 + '<p>' + a + '</p>\n'
                 else:
                     s = s + '\t'*5 + '<p>' + tmp + '</p>\n'
-
         return s
