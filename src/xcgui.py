@@ -8,8 +8,11 @@ from tkinter import messagebox
 from pathlib import PurePath
 
 from xmlconverter import XmlConverter
-from csvconverter import CsvConverter
+from xmlexporter import XmlExporter
+from csvimporter import CsvImporter
 from updatemngr import UpdateManager
+from dbmanager import DBManager
+
 
 class XcGuiApplication:
     """ GUI layout for xc-convert application """
@@ -185,9 +188,12 @@ class XcGuiApplication:
             messagebox.showwarning("Missing Information", msg)
             return
 
+        dbm = DBManager()
+
         # we got two types of operations; either x2c or c2x for XML to CSV and CSV to XML, respectively
         if self.conversion_type == 'x2c':
             # XML to CSV Conversion
+            # XML importer -> DB -> CSV exporter
             try:
                 xml_converter = XmlConverter(self.in_file)
                 xml_converter.convert(self.out_dir)
@@ -195,13 +201,16 @@ class XcGuiApplication:
                 print(err)
                 messagebox.showerror(title="Error", message=err)
                 return
-
         elif self.conversion_type == 'c2x':
             # CSV to XML Conversion
+            # CSV importer -> DB -> XML exporter
             try:
-                csv_converter = CsvConverter(self.in_file)
-                csv_converter.set_operation(self.csv_to_xml_operation.get())
-                csv_converter.convert(self.out_dir)
+                csv_importer = CsvImporter(self.in_file, dbm)
+                xml_exporter = XmlExporter(self.out_dir, dbm)
+                xml_exporter.set_operation(self.csv_to_xml_operation.get())
+
+                table_name = csv_importer.read()
+                xml_exporter.write(table_name)
             except RuntimeError as err:
                 print(err)
                 messagebox.showerror(title="Error", message=err)
