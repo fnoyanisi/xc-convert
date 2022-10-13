@@ -44,6 +44,15 @@ class DBManager:
         for row in self.conn.execute("select * from " + table_name):
             yield row
 
+    # returns a list of columns names for the table_name
+    def get_column_names(self, table_name):
+        res = []
+        sql = "PRAGMA table_info('" + table_name + "')"
+        for c in self.cur.execute(sql).fetchall():
+            res.append(c[1])
+        return res
+
+
     def __dict_factory(self, cursor, row):
         col_names = [col[0] for col in cursor.description]
         return {key: value for key, value in zip(col_names, row)}
