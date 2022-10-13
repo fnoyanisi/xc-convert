@@ -12,7 +12,6 @@ class XmlExporter(FileExporter):
     def __init__(self, o, d):
         super().__init__(o, d)
 
-        self.missing_val_str = '#N/A'
         self.out_dir = o
         self.dbm = d
 
