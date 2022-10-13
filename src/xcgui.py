@@ -7,8 +7,9 @@ from tkinter import messagebox
 
 from pathlib import PurePath
 
-from xmlconverter import XmlConverter
 from xmlexporter import XmlExporter
+from xmlimporter import XmlImporter
+from csvexporter import CsvExporter
 from csvimporter import CsvImporter
 from updatemngr import UpdateManager
 from dbmanager import DBManager
@@ -195,8 +196,11 @@ class XcGuiApplication:
             # XML to CSV Conversion
             # XML importer -> DB -> CSV exporter
             try:
-                xml_converter = XmlConverter(self.in_file)
-                xml_converter.convert(self.out_dir)
+                xml_importer = XmlImporter(self.in_file, dbm)
+                csv_exporter = CsvExporter(self.out_dir, dbm)
+
+                xml_importer.read()
+                csv_exporter.write_all()
             except RuntimeError as err:
                 print(err)
                 messagebox.showerror(title="Error", message=err)
