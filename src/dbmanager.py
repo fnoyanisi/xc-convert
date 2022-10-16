@@ -9,7 +9,7 @@ class DBManager:
     conn = None
 
     def __init__(self):
-        self.conn = sqlite3.connect("test1.db")
+        self.conn = sqlite3.connect(":memory:")
         # DBManager always returns rows in the form of a dict
         # with header:value format
         self.conn.row_factory = self.__dict_factory
