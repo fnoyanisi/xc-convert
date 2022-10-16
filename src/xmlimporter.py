@@ -41,6 +41,7 @@ class XmlImporter(FileImporter):
 
             # iterate through the managedObject and update DB with the values
             for mo_entry in list_of_managedObjects:
+                values = []
                 if mo_entry.getAttribute("class") == mo_class:
                     mo = ManagedObject(mo_class,
                                        mo_entry.getAttribute("version"),
@@ -61,8 +62,10 @@ class XmlImporter(FileImporter):
                             # don't know what this entry is, skipping
                             pass
 
-                    # write entry into the DB
-                    self.dbm.insert_values(mo_class, mo.get_values())
+                    values.append(mo.get_values())
+
+                # write the entry into the DB
+                self.dbm.insert_values(mo_class, values)
 
     # method to populate self.headers dictionary and returns a list of
     # all the managed objects
