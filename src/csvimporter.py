@@ -59,7 +59,7 @@ class CsvImporter(FileImporter):
         # remove non-printable characters
         header = utils.remove_non_printable(header)
 
-        if not ',' in header:
+        if ',' not in header:
             raise RuntimeError("Unsupported CSV format")
         else:
             csv_columns = header.split(',')
