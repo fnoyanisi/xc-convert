@@ -9,7 +9,7 @@ class DBManager:
     conn = None
 
     def __init__(self):
-        self.conn = sqlite3.connect(":memory:")
+        self.conn = sqlite3.connect("test1.db")
         # DBManager always returns rows in the form of a dict
         # with header:value format
         self.conn.row_factory = self.__dict_factory
@@ -18,9 +18,12 @@ class DBManager:
     # table_name - name of the table
     # cols - a list containing the column names
     def create_table(self, table_name, column_names):
-        # replace {} with "_CompactItem" in the column names
-        refined_column_names = [sub.replace("{}", "_CompactItem") for sub in column_names]
-        sql = 'CREATE TABLE ' + table_name + ' (' + ', '.join(refined_column_names) + ')'
+        sql = 'DROP TABLE IF EXISTS ' + table_name
+        self.cursor.execute(sql)
+        self.conn.commit()
+        # wrap the column names within quotes to escape special chars
+        updated_column_names = ["'" + w + "'" for w in column_names]
+        sql = 'CREATE TABLE ' + table_name + ' (' + ', '.join(updated_column_names) + ')'
         self.cursor.execute(sql)
         self.conn.commit()
 
@@ -29,9 +32,8 @@ class DBManager:
     def insert_values(self, table_name, map):
         self.cursor.execute("begin transaction")
         for entry in map:
-            # update the dict keys in case "{}" is included
-            updated_keys = {k.replace("{}", "_CompactItem"): v for k, v in entry.items()}
-            columns = ', '.join(updated_keys)
+            # wrap the column names within quotes to escape special chars
+            columns = ', '.join(f"'{w}'" for w in entry.keys())
             values = ', '.join(f"'{w}'" for w in entry.values())
             sql = 'INSERT INTO ' + table_name + ' ({}) VALUES ({})'.format(columns, values)
             self.cursor.execute(sql)
@@ -48,10 +50,16 @@ class DBManager:
     def get_column_names(self, table_name):
         res = []
         sql = "PRAGMA table_info('" + table_name + "')"
-        for c in self.cur.execute(sql).fetchall():
-            res.append(c[1])
+        for c in self.cursor.execute(sql).fetchall():
+            res.append(c['name'])
         return res
 
+    def get_table_names(self):
+        res = []
+        sql = "SELECT name FROM sqlite_master WHERE type='table'"
+        for t in self.cursor.execute(sql).fetchall():
+            res.append(t['name'])
+        return res
 
     def __dict_factory(self, cursor, row):
         col_names = [col[0] for col in cursor.description]
