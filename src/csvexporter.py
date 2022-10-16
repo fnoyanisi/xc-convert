@@ -29,7 +29,8 @@ class CsvExporter(FileExporter):
             writer.writeheader()
 
             for row in self.dbm.get_rows(table_name):
-                writer.writerow(row)
+                updated_row = {k: self.missing_val_str if not v else v for (k, v) in row.items()}
+                writer.writerow(updated_row)
 
     def write_all(self):
         for table_name in self.dbm.get_table_names():
