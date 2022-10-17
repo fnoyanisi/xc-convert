@@ -63,11 +63,11 @@ class XmlExporter(FileExporter):
 
                 # rest of the parameters
                 for parameter_name in row:
-                    if not parameter_name in mo_attributes:
+                    if parameter_name not in mo_attributes:
                         if row[parameter_name] == self.missing_val_str:
                             # This parameter is not available for this managedObject
                             continue
-                        elif '_CompactItem' in parameter_name:
+                        elif '{}' in parameter_name:
                             # a list
                             xmlfile.write('\t' * 3 + '<list name="' + re.sub('{}', '', parameter_name) + '">\n')
                             xmlfile.write(self.__generate_list(row[parameter_name]))
