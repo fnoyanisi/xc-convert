@@ -1,4 +1,7 @@
-# base class for a file exporter
+"""
+Base class for a file exporter
+"""
+
 
 # o - path to the output directory
 # d - valid DBManager instance
@@ -17,6 +20,6 @@ class FileExporter:
         print("implement me")
 
     def set_operation(self, o):
-        if not o in ['update', 'create', 'delete']:
+        if o not in ['update', 'create', 'delete']:
             raise RuntimeError("Invalid operation type: " + str(o))
         self.operation = o

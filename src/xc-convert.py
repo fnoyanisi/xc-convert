@@ -1,4 +1,6 @@
-# This file is used to test the library code
+"""
+Entry class
+"""
 from xcgui import *
 
 if __name__ == '__main__':

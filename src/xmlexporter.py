@@ -1,3 +1,6 @@
+"""
+Reads the data from DB and writes into an XML file
+"""
 from fileexporter import FileExporter
 from pathlib import PurePath
 

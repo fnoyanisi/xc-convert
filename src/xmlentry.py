@@ -1,5 +1,8 @@
-# base class for more complex entries in the XML file
-# this can be subclassed by a managed object, a list or an item
+"""
+Base class for more complex entries in the XML file
+This can be subclassed by a managed object, a list or an item
+"""
+
 from enum import Enum
 
 
@@ -9,6 +12,7 @@ class XmlEntryType(Enum):
     ITEM = 2
     LIST = 3
     MANAGEDOBJECT = 4
+
 
 # n -   name of the XML entry. For parameters, this is the internal name of the
 #       parameter. For lists, this is the internal name of the list appended with

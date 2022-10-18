@@ -1,5 +1,5 @@
 """
-A class to manage the database operations
+Manages the database operations
 """
 import sqlite3
 

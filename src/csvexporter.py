@@ -1,9 +1,11 @@
+"""
+Gets data from the DB and writes into a CSV file
+"""
 from fileexporter import FileExporter
 from pathlib import PurePath
 
 import csv
 import datetime
-import utils
 
 
 # o - path to the output directory

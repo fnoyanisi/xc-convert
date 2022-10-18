@@ -14,6 +14,7 @@ from csvimporter import CsvImporter
 from updatemngr import UpdateManager
 from dbmanager import DBManager
 
+import utils
 
 class XcGuiApplication:
     """ GUI layout for xc-convert application """
@@ -56,7 +57,7 @@ class XcGuiApplication:
         Label(self.logo_frame, image=self.img_csv).grid(row=0, column=2, sticky='nw')
         Label(self.logo_frame, text='\nXml to Csv Converter ' + self.version, font=('Helvetica 13 bold')).grid(row=1, column=0,
                                                                                                columnspan=2)
-        Label(self.logo_frame, text=('\nSimple file format conversion utility for Nokia OSS configration files.\n\n'
+        Label(self.logo_frame, text=('\nSimple file format conversion utility for Nokia OSS configuration files.\n\n'
                                    'Please see the "About" section for the license information.')
              , wraplength=200, justify=LEFT).grid(row=2, column=0, columnspan=2)
 
@@ -67,12 +68,12 @@ class XcGuiApplication:
         self.selection = StringVar()
         Label(self.config_frame, text='Convert the input file from').pack()
         Radiobutton(self.config_frame, text='XML to CSV', variable=self.selection, value='x2c',
-                    command=self.SetSelection).pack()
+                    command=self.set_selection).pack()
         Radiobutton(self.config_frame, text='CSV to XML', variable=self.selection, value='c2x',
-                    command=self.SetSelection).pack()
+                    command=self.set_selection).pack()
 
         # Operation type
-		# This is another pack() manager inside the config_frame
+        # This is another pack() manager inside the config_frame
         self.conversion_type_frame = Frame(self.config_frame)
         self.conversion_type_frame.pack()
         Label(self.conversion_type_frame, text='Type of operation :').pack(side=LEFT)
@@ -90,11 +91,11 @@ class XcGuiApplication:
         # Just an empty row
         Label(self.config_frame, text=' ').pack()
 
-        Button(self.config_frame, text='Select the input file', command=self.FileChooserDialog, width=25).pack()
+        Button(self.config_frame, text='Select the input file', command=self.file_chooser_dialog, width=25).pack()
         self.in_file_label = Label(self.config_frame, text='No file selected')
         self.in_file_label.pack(pady=2)
 
-        Button(self.config_frame, text='Select the output directory', command=self.DirChooserDialog, width=25).pack()
+        Button(self.config_frame, text='Select the output directory', command=self.dir_chooser_dialog, width=25).pack()
         self.out_dir_label = Label(self.config_frame, text='No directory selected')
         self.out_dir_label.pack(pady=2)
 
@@ -102,14 +103,14 @@ class XcGuiApplication:
         self.bottom_frame = Frame(top)
         self.bottom_frame.grid(row=1, column=0, columnspan=2, padx=2, pady=2)
 
-        Button(self.bottom_frame, text='Run', command=self.Run, width=60).pack(fill=X, pady=5)
-        Button(self.bottom_frame, text='Check for Updates', command=self.CheckForUpdates).pack(fill=X, pady=5)
-        Button(self.bottom_frame, text='About', command=self.AboutDialog).pack(fill=X, pady=5)
+        Button(self.bottom_frame, text='Run', command=self.run, width=60).pack(fill=X, pady=5)
+        Button(self.bottom_frame, text='Check for Updates', command=self.check_for_updates).pack(fill=X, pady=5)
+        Button(self.bottom_frame, text='About', command=self.about_dialog).pack(fill=X, pady=5)
         Button(self.bottom_frame, text='Quit', command=top.destroy).pack(fill=X, pady=5)
 
     # The selection result from opt1 and opt2 radio buttons
     # Determines the type of file conversion to be done, XML to CSV to CSV to XML
-    def SetSelection(self):
+    def set_selection(self):
         self.conversion_type = self.selection.get()
 
         if self.conversion_type == 'c2x':
@@ -117,35 +118,27 @@ class XcGuiApplication:
         elif self.conversion_type == 'x2c':
             self.option_menu.config(state = DISABLED)
 
-    # trims the string "s" if its length > w and
-    # replaces the last three characters with "..."
-    def TrimStr(selfself, s, w):
-        if len(s) > w:
-            return s[:w-3] + "..."
-        else:
-            return s
-
     # File chooser for the input file
-    def FileChooserDialog(self):
+    def file_chooser_dialog(self):
         f = filedialog.askopenfilename()
         if len(f) != 0:
-            self.in_file_label.config(text=self.TrimStr(PurePath(f).name, 30))
+            self.in_file_label.config(text=utils.trim_str(PurePath(f).name, 30))
             self.in_file = f
 
     # Directory choose for the destination location
-    def DirChooserDialog(self):
+    def dir_chooser_dialog(self):
         d = filedialog.askdirectory()
         if len(d) != 0:
-            self.out_dir_label.config(text=self.TrimStr(PurePath(d).name, 30))
+            self.out_dir_label.config(text=utils.trim_str(PurePath(d).name, 30))
             self.out_dir = d
 
-    def CheckForUpdates(self):
+    def check_for_updates(self):
         # check for updates
         um = UpdateManager()
         um.check_for_updates(self.version, False)
 
     # Displays the license information
-    def AboutDialog(self):
+    def about_dialog(self):
         about_dialog = Toplevel(self.top)
         about_dialog.wm_title('About xc-converter ' + self.version)
         about_dialog.resizable(width=False, height=False)
@@ -179,7 +172,7 @@ class XcGuiApplication:
                                                                                         sticky=N + S, padx=0, pady=10)
 
     # Performs the file conversion operation
-    def Run(self):
+    def run(self):
         if not (self.in_file and self.out_dir and self.conversion_type) or \
         (self.conversion_type == 'c2x' and self.csv_to_xml_operation.get() == 'none'):
             msg = 'Please make sure you have\n' \
@@ -203,7 +196,7 @@ class XcGuiApplication:
                 csv_exporter.write_all()
             except RuntimeError as err:
                 print(err)
-                messagebox.showerror(title="Error", message=err)
+                messagebox.showerror(title="Error", message=str(err))
                 return
         elif self.conversion_type == 'c2x':
             # CSV to XML Conversion
@@ -217,7 +210,7 @@ class XcGuiApplication:
                 xml_exporter.write(table_name)
             except RuntimeError as err:
                 print(err)
-                messagebox.showerror(title="Error", message=err)
+                messagebox.showerror(title="Error", message=str(err))
                 return
         else:
             # never reached

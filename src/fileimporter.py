@@ -1,4 +1,7 @@
-# base class for a file importer
+"""
+Base class for a file importer
+"""
+
 
 # f - path to the import file
 # d - valid DBManager instance

@@ -1,3 +1,7 @@
+"""
+Reads an XML file into the database
+"""
+
 from xml.dom import minidom
 
 import xml

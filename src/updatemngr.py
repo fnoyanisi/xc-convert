@@ -1,7 +1,8 @@
-# class to manage the automatic updates
+""""
+Manages the checks for the updates
+"""
 import urllib.request
 from urllib.error import URLError
-from urllib.error import HTTPError
 from tkinter import messagebox
 from socket import timeout
 
@@ -29,9 +30,6 @@ class UpdateManager:
         except URLError as e:
             messagebox.showerror("Update Manager URL Error", str(e.reason))
             return
-        except HTTPError as e:
-            messagebox.showerror("Update Manager HTTP Error", str(e.reason))
-            return
         except timeout:
             messagebox.showerror("Update Manager Network Error", "Request timeout")
             return
@@ -58,7 +56,8 @@ class UpdateManager:
     #
     # e.g.
     # 0.6.4 vs 7.0.1
-    def __compare_version_info(self, v1, v2):
+    @staticmethod
+    def __compare_version_info(v1, v2):
         arr_v1 = v1.split(".")
         arr_v2 = v2.split(".")
 
