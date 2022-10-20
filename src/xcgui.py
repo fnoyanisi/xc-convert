@@ -4,6 +4,7 @@ GUI Layout for xc-converter
 from tkinter import *
 from tkinter import filedialog
 from tkinter import messagebox
+from tkinter import ttk
 
 from pathlib import PurePath
 
@@ -16,10 +17,12 @@ from dbmanager import DBManager
 
 import utils
 
+
 class XcGuiApplication:
     """ GUI layout for xc-convert application """
     version = ""
     p = "../"
+    selection = ""
 
     def read_version(self):
         try:
@@ -33,90 +36,105 @@ class XcGuiApplication:
             exit(1)
 
     # Initialize the GUI
-    def __init__(self, top):
+    def __init__(self, root):
         self.read_version()
 
         self.in_file = None
         self.out_dir = None
         self.conversion_type = None
-        self.csv_to_xml_operation= None
+        self.csv_to_xml_operation = None
 
-        self.top = top
-        top.wm_title('xc-converter ' + self.version)
-        top.resizable(width=False, height=False)
+        self.root = root
+        root.wm_title('xcc')
+        root.resizable(width=False, height=False)
 
         # Logo & Header
-        self.logo_frame = Frame(top)
+        self.logo_frame = Frame(root)
         self.logo_frame.grid(row=0, column=0, padx=4, pady=5)
 
-        self.img_xml = PhotoImage(file=self.p + 'img/xml.gif')
-        self.img_arrows = PhotoImage(file=self.p + 'img/arrows.gif')
-        self.img_csv = PhotoImage(file=self.p + 'img/csv.gif')
-        Label(self.logo_frame, image=self.img_xml).grid(row=0, column=0, sticky='ne')
-        Label(self.logo_frame, image=self.img_arrows).grid(row=0, column=1, sticky='n')
-        Label(self.logo_frame, image=self.img_csv).grid(row=0, column=2, sticky='nw')
-        Label(self.logo_frame, text='\nXml to Csv Converter ' + self.version, font=('Helvetica 13 bold')).grid(row=1, column=0,
-                                                                                               columnspan=2)
-        Label(self.logo_frame, text=('\nSimple file format conversion utility for Nokia OSS configuration files.\n\n'
-                                   'Please see the "About" section for the license information.')
-             , wraplength=200, justify=LEFT).grid(row=2, column=0, columnspan=2)
+        self.img_process = PhotoImage(file=self.p + 'img/process.gif')
+        Label(self.logo_frame, image=self.img_process).grid(row=0, column=0, sticky='ne')
+        Label(self.logo_frame, text='\nRAN helper utility (v' + self.version + ')',
+              font='Helvetica 13 bold').grid(row=1, column=0, columnspan=2)
+        Label(self.logo_frame, text=('\nFile conversion and RAN audit utility.\n\n'
+                                     'Please see the "About" section for the license information.')
+              , wraplength=200, justify=LEFT).grid(row=2, column=0, columnspan=2)
 
-        # Conversion type, input file, output folder selection
-        self.config_frame = Frame(top)
-        self.config_frame.grid(row=0, column=1, padx=4, pady=5)
+        # Creating the tab control
+        self.notebook = ttk.Notebook(root)
+        self.notebook.grid(row=0, column=1)
 
-        self.selection = StringVar()
-        Label(self.config_frame, text='Convert the input file from').pack()
-        Radiobutton(self.config_frame, text='XML to CSV', variable=self.selection, value='x2c',
-                    command=self.set_selection).pack()
-        Radiobutton(self.config_frame, text='CSV to XML', variable=self.selection, value='c2x',
-                    command=self.set_selection).pack()
+        tab1_frame = Frame(self.notebook, width=300, height=200)
+        tab2_frame = Frame(self.notebook, width=300, height=200)
 
-        # Operation type
-        # This is another pack() manager inside the config_frame
-        self.conversion_type_frame = Frame(self.config_frame)
-        self.conversion_type_frame.pack()
-        Label(self.conversion_type_frame, text='Type of operation :').pack(side=LEFT)
+        self.get_file_conversion_layout(tab1_frame)
+        self.get_audit_layout(tab2_frame)
 
-        self.csv_to_xml_operation = StringVar()
-        self.csv_to_xml_operation.set('none')
-        csv_to_xml_operation_types = ('update','create','delete')
-
-        self.option_menu = OptionMenu(self.conversion_type_frame, self.csv_to_xml_operation, *csv_to_xml_operation_types)
-        self.option_menu.config(state = DISABLED)
-        self.option_menu.pack(side = RIGHT)
-
-        # End of Operation Type
-
-        # Just an empty row
-        Label(self.config_frame, text=' ').pack()
-
-        Button(self.config_frame, text='Select the input file', command=self.file_chooser_dialog, width=25).pack()
-        self.in_file_label = Label(self.config_frame, text='No file selected')
-        self.in_file_label.pack(pady=2)
-
-        Button(self.config_frame, text='Select the output directory', command=self.dir_chooser_dialog, width=25).pack()
-        self.out_dir_label = Label(self.config_frame, text='No directory selected')
-        self.out_dir_label.pack(pady=2)
+        self.notebook.add(tab1_frame, text="File Conversion")
+        self.notebook.add(tab2_frame, text="Parameter Audit")
 
         # Buttons
-        self.bottom_frame = Frame(top)
+        self.bottom_frame = Frame(root)
         self.bottom_frame.grid(row=1, column=0, columnspan=2, padx=2, pady=2)
 
         Button(self.bottom_frame, text='Run', command=self.run, width=60).pack(fill=X, pady=5)
         Button(self.bottom_frame, text='Check for Updates', command=self.check_for_updates).pack(fill=X, pady=5)
         Button(self.bottom_frame, text='About', command=self.about_dialog).pack(fill=X, pady=5)
-        Button(self.bottom_frame, text='Quit', command=top.destroy).pack(fill=X, pady=5)
+        Button(self.bottom_frame, text='Quit', command=root.destroy).pack(fill=X, pady=5)
+
+    def get_file_conversion_layout(self, parent):
+        file_conversion_frame = Frame(parent)
+
+        Label(file_conversion_frame, text='Convert the input file from').pack()
+        Radiobutton(file_conversion_frame, text='XML to CSV', variable=self.selection, value='x2c',
+                    command=self.set_selection).pack()
+        Radiobutton(file_conversion_frame, text='CSV to XML', variable=self.selection, value='c2x',
+                    command=self.set_selection).pack()
+
+        # Operation type
+        # This is another pack() manager inside the config_frame
+        conversion_type_frame = Frame(file_conversion_frame)
+        conversion_type_frame.pack()
+        Label(conversion_type_frame, text='Type of operation :').pack(side=LEFT)
+
+        csv_to_xml_operation = StringVar()
+        csv_to_xml_operation.set('none')
+        csv_to_xml_operation_types = ('update', 'create', 'delete')
+
+        option_menu = OptionMenu(conversion_type_frame, csv_to_xml_operation,
+                                      *csv_to_xml_operation_types)
+        option_menu.config(state=DISABLED)
+        option_menu.pack(side=RIGHT)
+
+        # End of Operation Type
+
+        # Just an empty row
+        Label(file_conversion_frame, text=' ').pack()
+
+        Button(file_conversion_frame, text='Select the input file', command=self.file_chooser_dialog,
+               width=25).pack()
+        self.in_file_label = Label(file_conversion_frame, text='No file selected')
+        self.in_file_label.pack(pady=2)
+
+        Button(file_conversion_frame, text='Select the output directory', command=self.dir_chooser_dialog,
+               width=25).pack()
+        self.out_dir_label = Label(file_conversion_frame, text='No directory selected')
+        self.out_dir_label.pack(pady=2)
+
+        file_conversion_frame.pack()
+
+    def get_audit_layout(self, parent):
+        Label(parent, text="TEST").pack()
 
     # The selection result from opt1 and opt2 radio buttons
     # Determines the type of file conversion to be done, XML to CSV to CSV to XML
     def set_selection(self):
-        self.conversion_type = self.selection.get()
+        self.conversion_type = self.selection
 
         if self.conversion_type == 'c2x':
-            self.option_menu.config(state = NORMAL)
+            self.option_menu.config(state=NORMAL)
         elif self.conversion_type == 'x2c':
-            self.option_menu.config(state = DISABLED)
+            self.option_menu.config(state=DISABLED)
 
     # File chooser for the input file
     def file_chooser_dialog(self):
@@ -139,7 +157,7 @@ class XcGuiApplication:
 
     # Displays the license information
     def about_dialog(self):
-        about_dialog = Toplevel(self.top)
+        about_dialog = Toplevel(self.root)
         about_dialog.wm_title('About xc-converter ' + self.version)
         about_dialog.resizable(width=False, height=False)
 
@@ -174,7 +192,7 @@ class XcGuiApplication:
     # Performs the file conversion operation
     def run(self):
         if not (self.in_file and self.out_dir and self.conversion_type) or \
-        (self.conversion_type == 'c2x' and self.csv_to_xml_operation.get() == 'none'):
+                (self.conversion_type == 'c2x' and self.csv_to_xml_operation.get() == 'none'):
             msg = 'Please make sure you have\n' \
                   '  * Selected the type of the operation\n' \
                   '  * Located the input file\n' \
