@@ -8,10 +8,10 @@ from tkinter import ttk
 
 from pathlib import PurePath
 
-from xmlexporter import XmlExporter
-from xmlimporter import XmlImporter
-from csvexporter import CsvExporter
-from csvimporter import CsvImporter
+from src.exporter.xmlexporter import XmlExporter
+from src.importer.xmlimporter import XmlImporter
+from src.exporter.csvexporter import CsvExporter
+from src.importer.csvimporter import CsvImporter
 from updatemngr import UpdateManager
 from dbmanager import DBManager
 
