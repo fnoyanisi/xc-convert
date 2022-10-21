@@ -12,6 +12,7 @@ else
   echo "DO NOT CLOSE THIS WINDOW!"
   echo " "
   echo "starting xc-convert..."
+  export PYTHONPATH=`pwd`
   cd ./src
 	$PYTHON xc-convert.py
 fi
