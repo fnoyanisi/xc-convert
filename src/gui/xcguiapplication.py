@@ -48,28 +48,37 @@ class XcGuiApplication:
 
         self.selection = StringVar()
 
+        self.tab_width = 300
+        self.tab_height = 220
+
         self.root = root
         root.wm_title('xcc')
         root.resizable(width=False, height=False)
 
         # Logo & Header
-        self.logo_frame = Frame(root)
-        self.logo_frame.grid(row=0, column=0, padx=4, pady=5)
+        self.left_frame = Frame(root)
+        self.left_frame.grid(row=0, column=0)
 
         self.img_process = PhotoImage(file=self.p + 'img/process.gif')
-        Label(self.logo_frame, image=self.img_process).grid(row=0, column=0, sticky='ne')
-        Label(self.logo_frame, text='\nRAN helper utility (v' + self.version + ')',
-              font='Helvetica 13 bold').grid(row=1, column=0, columnspan=2)
-        Label(self.logo_frame, text=('\nFile conversion and RAN audit utility.\n\n'
+        Label(self.left_frame, image=self.img_process).pack(padx=(10,5))
+        Label(self.left_frame, text='\nRAN helper utility (v' + self.version + ')',
+              font='Helvetica 13 bold').pack(padx=(10,5))
+        Label(self.left_frame, text=('\nFile conversion and RAN audit utility.\n\n'
                                      'Please see the "About" section for the license information.')
-              , wraplength=200, justify=LEFT).grid(row=2, column=0, columnspan=2)
+              , wraplength=200, justify=LEFT).pack(padx=(10,5))
 
-        # Creating the tab control
-        self.notebook = ttk.Notebook(root)
-        self.notebook.grid(row=0, column=1)
+        # Buttons
+        self.get_button_frame(self.left_frame, root).pack(fill=X)
 
-        tab1_frame = Frame(self.notebook, width=300, height=200)
-        tab2_frame = Frame(self.notebook, width=300, height=200)
+        # RIGHT FRAME
+        self.right_frame = Frame(root)
+        self.right_frame.grid(row=0, column=1)
+
+        self.notebook = ttk.Notebook(self.right_frame)
+        self.notebook.pack()
+
+        tab1_frame = Frame(self.notebook, width=self.tab_width, height=self.tab_height)
+        tab2_frame = Frame(self.notebook, width=self.tab_width, height=self.tab_height)
 
         self.get_file_conversion_layout(tab1_frame)
         self.get_audit_layout(tab2_frame)
@@ -77,19 +86,19 @@ class XcGuiApplication:
         self.notebook.add(tab1_frame, text="File Conversion")
         self.notebook.add(tab2_frame, text="Parameter Audit")
 
-        # Buttons
-        self.bottom_frame = Frame(root)
-        self.bottom_frame.grid(row=1, column=0, columnspan=2, padx=2, pady=2)
+    def get_button_frame(self, parent, r):
+        button_frame = Frame(parent)
 
-        Button(self.bottom_frame, text='Run', command=self.run, width=60).pack(fill=X, pady=5)
-        Button(self.bottom_frame, text='Check for Updates', command=self.check_for_updates).pack(fill=X, pady=5)
-        Button(self.bottom_frame, text='About', command=self.about_dialog).pack(fill=X, pady=5)
-        Button(self.bottom_frame, text='Quit', command=root.destroy).pack(fill=X, pady=5)
+        Button(button_frame, text='Check for Updates', command=self.check_for_updates).pack(fill=X, pady=5)
+        Button(button_frame, text='About', command=self.about_dialog).pack(fill=X, pady=5)
+        Button(button_frame, text='Quit', command=r.destroy).pack(fill=X, pady=5)
+
+        return button_frame
 
     def get_file_conversion_layout(self, parent):
         file_conversion_frame = Frame(parent)
 
-        Label(file_conversion_frame, text='Convert the input file from').pack()
+        Label(file_conversion_frame, text='Convert the input file from').pack(pady=(2, 15))
         Radiobutton(file_conversion_frame, text='XML to CSV', variable=self.selection, value='x2c',
                     command=self.set_selection).pack()
         Radiobutton(file_conversion_frame, text='CSV to XML', variable=self.selection, value='c2x',
@@ -118,20 +127,44 @@ class XcGuiApplication:
         Button(file_conversion_frame, text='Select the input file', command=self.file_chooser_dialog,
                width=25).pack()
         self.in_file_label = Label(file_conversion_frame, text='No file selected')
-        self.in_file_label.pack(pady=2)
+        self.in_file_label.pack(pady=(2, 15))
 
         Button(file_conversion_frame, text='Select the output directory', command=self.dir_chooser_dialog,
                width=25).pack()
         self.out_dir_label = Label(file_conversion_frame, text='No directory selected')
-        self.out_dir_label.pack(pady=2)
+        self.out_dir_label.pack(pady=(2, 15))
+
+        Button(file_conversion_frame, text='Run', command=self.run_conversion).pack(fill=X, pady=(20, 2))
 
         file_conversion_frame.pack()
 
     def get_audit_layout(self, parent):
-        Label(parent, text="TEST").pack()
+        audit_frame = Frame(parent)
+
+        Label(audit_frame, text='Audits the parameters in the target file against the ones in the reference.',
+              wraplength=self.tab_width - 20, justify="center").pack(pady=(2, 15))
+
+        Button(audit_frame, text='Select the reference file', command=self.file_chooser_dialog,
+               width=25).pack()
+        ref_file_label = Label(audit_frame, text='No file selected')
+        ref_file_label.pack(pady=(2, 15))
+
+        Button(audit_frame, text='Select the target file', command=self.file_chooser_dialog,
+               width=25).pack()
+        target_file_label = Label(audit_frame, text='No file selected')
+        target_file_label.pack(pady=(2, 15))
+
+        Button(audit_frame, text='Select the output directory', command=self.dir_chooser_dialog,
+               width=25).pack()
+        self.out_dir_label = Label(audit_frame, text='No directory selected')
+        self.out_dir_label.pack(pady=(2, 15))
+
+        Button(audit_frame, text='Run', command=self.run_conversion).pack(fill=X, pady=(20, 2))
+
+        audit_frame.pack()
 
     # The selection result from opt1 and opt2 radio buttons
-    # Determines the type of file conversion to be done, XML to CSV to CSV to XML
+    # Determines the type of file conversion to be done, XML to CSV or CSV to XML
     def set_selection(self):
         self.conversion_type = self.selection.get()
 
@@ -194,7 +227,7 @@ class XcGuiApplication:
                                                                                         sticky=N + S, padx=0, pady=10)
 
     # Performs the file conversion operation
-    def run(self):
+    def run_conversion(self):
         if not (self.in_file and self.out_dir and self.conversion_type) or \
                 (self.conversion_type == 'c2x' and self.csv_to_xml_operation.get() == 'none'):
             msg = 'Please make sure you have\n' \
