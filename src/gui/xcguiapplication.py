@@ -22,7 +22,7 @@ class XcGuiApplication:
     """ GUI layout for xc-convert application """
     version = ""
     p = "../"
-    selection = ()
+    selection = StringVar()
 
     def read_version(self):
         try:
