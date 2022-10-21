@@ -22,7 +22,6 @@ class XcGuiApplication:
     """ GUI layout for xc-convert application """
     version = ""
     p = "../"
-    selection = StringVar()
 
     def read_version(self):
         try:
@@ -37,12 +36,17 @@ class XcGuiApplication:
 
     # Initialize the GUI
     def __init__(self, root):
+        self.out_dir_label = None
+        self.in_file_label = None
+        self.option_menu = None
         self.read_version()
 
         self.in_file = None
         self.out_dir = None
         self.conversion_type = None
         self.csv_to_xml_operation = None
+
+        self.selection = StringVar()
 
         self.root = root
         root.wm_title('xcc')
@@ -99,12 +103,12 @@ class XcGuiApplication:
 
         csv_to_xml_operation = StringVar()
         csv_to_xml_operation.set('none')
-        csv_to_xml_operation_types = ('update', 'create', 'delete')
+        csv_to_xml_operation_types = ['update', 'create', 'delete']
 
-        option_menu = OptionMenu(conversion_type_frame, csv_to_xml_operation,
+        self.option_menu = OptionMenu(conversion_type_frame, csv_to_xml_operation,
                                       *csv_to_xml_operation_types)
-        option_menu.config(state=DISABLED)
-        option_menu.pack(side=RIGHT)
+        self.option_menu.config(state=DISABLED)
+        self.option_menu.pack(side=RIGHT)
 
         # End of Operation Type
 
@@ -129,7 +133,7 @@ class XcGuiApplication:
     # The selection result from opt1 and opt2 radio buttons
     # Determines the type of file conversion to be done, XML to CSV to CSV to XML
     def set_selection(self):
-        self.conversion_type = self.selection
+        self.conversion_type = self.selection.get()
 
         if self.conversion_type == 'c2x':
             self.option_menu.config(state=NORMAL)
