@@ -8,14 +8,14 @@ from tkinter import ttk
 
 from pathlib import PurePath
 
-from src.exporter.xmlexporter import XmlExporter
-from src.importer.xmlimporter import XmlImporter
-from src.exporter.csvexporter import CsvExporter
-from src.importer.csvimporter import CsvImporter
-from updatemngr import UpdateManager
-from dbmanager import DBManager
+from exporter.xmlexporter import XmlExporter
+from importer.xmlimporter import XmlImporter
+from exporter.csvexporter import CsvExporter
+from importer.csvimporter import CsvImporter
+from src.updatemngr import UpdateManager
+from src.dbmanager import DBManager
 
-import utils
+import src.utils as utils
 
 
 class XcGuiApplication:

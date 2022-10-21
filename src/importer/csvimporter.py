@@ -1,11 +1,11 @@
 """
 Reads a CSV file into the database
 """
-from fileimporter import FileImporter
+from importer.fileimporter import FileImporter
 from pathlib import PurePath
 
 import csv
-import utils
+import src.utils as utils
 
 
 class CsvImporter(FileImporter):

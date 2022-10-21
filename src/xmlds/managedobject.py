@@ -13,8 +13,8 @@ represents a managedObject entry in an XML file of the form
        ....
      </managedObject>
 """
-from src.xml.xmlentry import XmlEntry
-from src.xml.xmlentry import XmlEntryType
+from src.xmlds.xmlentry import XmlEntry
+from src.xmlds.xmlentry import XmlEntryType
 
 class ManagedObject(XmlEntry):
     # constructor
