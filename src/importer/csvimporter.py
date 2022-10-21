@@ -1,7 +1,7 @@
 """
 Reads a CSV file into the database
 """
-from importer.fileimporter import FileImporter
+from src.importer.fileimporter import FileImporter
 from pathlib import PurePath
 
 import csv

@@ -11,8 +11,8 @@ represents a list entry in an XML DOM of the form
             </item>
        </list>
 """
-from xmlds.xmlentry import XmlEntry
-from xmlds.xmlentry import XmlEntryType
+from src.xmlds.xmlentry import XmlEntry
+from src.xmlds.xmlentry import XmlEntryType
 
 class List(XmlEntry):
     def __init__(self, n):

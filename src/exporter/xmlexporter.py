@@ -1,12 +1,12 @@
 """
 Reads the data from DB and writes into an XML file
 """
-from exporter.fileexporter import FileExporter
+from src.exporter.fileexporter import FileExporter
 from pathlib import PurePath
 
 import re
 import datetime
-import src.utils
+import src.utils as utils
 
 
 # o - path to the output directory

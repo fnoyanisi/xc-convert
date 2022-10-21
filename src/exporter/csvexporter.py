@@ -1,7 +1,7 @@
 """
 Gets data from the DB and writes into a CSV file
 """
-from exporter.fileexporter import FileExporter
+from src.exporter.fileexporter import FileExporter
 from pathlib import PurePath
 
 import csv

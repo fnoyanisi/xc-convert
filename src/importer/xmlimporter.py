@@ -7,10 +7,10 @@ from xml.dom import minidom
 import xml
 import random
 
-from importer.fileimporter import FileImporter
-from xmlds.managedobject import ManagedObject
-from xmlds.list import List
-from xmlds.item import Item
+from src.importer.fileimporter import FileImporter
+from src.xmlds.managedobject import ManagedObject
+from src.xmlds.list import List
+from src.xmlds.item import Item
 
 
 class XmlImporter(FileImporter):

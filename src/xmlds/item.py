@@ -11,8 +11,8 @@ represents an item entry in an XML DOM of the form
             </item>
        </list>
 """
-from xmlds.xmlentry import XmlEntry
-from xmlds.xmlentry import XmlEntryType
+from src.xmlds.xmlentry import XmlEntry
+from src.xmlds.xmlentry import XmlEntryType
 
 import random
 
