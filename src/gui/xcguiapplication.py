@@ -7,6 +7,7 @@ from tkinter import messagebox
 from tkinter import ttk
 
 from pathlib import PurePath
+from functools import partial
 
 from src.exporter.xmlexporter import XmlExporter
 from src.importer.xmlimporter import XmlImporter
@@ -36,13 +37,24 @@ class XcGuiApplication:
 
     # Initialize the GUI
     def __init__(self, root):
-        self.out_dir_label = None
-        self.in_file_label = None
+        self.conversion_out_dir_label = None
+        self.conversion_out_dir = None
+
+        self.conversion_in_file_label = None
+        self.conversion_in_file = None
+
+        self.audit_ref_file_label = None
+        self.audit_ref_file = None
+
+        self.audit_target_file_label = None
+        self.audit_target_file = None
+
+        self.audit_out_dir_label = None
+        self.audit_out_dir = None
+
         self.option_menu = None
         self.read_version()
 
-        self.in_file = None
-        self.out_dir = None
         self.conversion_type = None
         self.csv_to_xml_operation = None
 
@@ -110,11 +122,11 @@ class XcGuiApplication:
         conversion_type_frame.pack()
         Label(conversion_type_frame, text='Type of operation :').pack(side=LEFT)
 
-        csv_to_xml_operation = StringVar()
-        csv_to_xml_operation.set('none')
+        self.csv_to_xml_operation = StringVar(parent)
+        self.csv_to_xml_operation.set('none')
         csv_to_xml_operation_types = ['update', 'create', 'delete']
 
-        self.option_menu = OptionMenu(conversion_type_frame, csv_to_xml_operation,
+        self.option_menu = OptionMenu(conversion_type_frame, self.csv_to_xml_operation,
                                       *csv_to_xml_operation_types)
         self.option_menu.config(state=DISABLED)
         self.option_menu.pack(side=RIGHT)
@@ -124,15 +136,17 @@ class XcGuiApplication:
         # Just an empty row
         Label(file_conversion_frame, text=' ').pack()
 
-        Button(file_conversion_frame, text='Select the input file', command=self.file_chooser_dialog,
+        file_chooser_function = partial(self.file_chooser_dialog, 1)
+        Button(file_conversion_frame, text='Select the input file', command=file_chooser_function,
                width=25).pack()
-        self.in_file_label = Label(file_conversion_frame, text='No file selected')
-        self.in_file_label.pack(pady=(2, 15))
+        self.conversion_in_file_label = Label(file_conversion_frame, text='No file selected')
+        self.conversion_in_file_label.pack(pady=(2, 15))
 
-        Button(file_conversion_frame, text='Select the output directory', command=self.dir_chooser_dialog,
+        dir_chooser_function = partial(self.dir_chooser_dialog, 1)
+        Button(file_conversion_frame, text='Select the output directory', command=dir_chooser_function,
                width=25).pack()
-        self.out_dir_label = Label(file_conversion_frame, text='No directory selected')
-        self.out_dir_label.pack(pady=(2, 15))
+        self.conversion_out_dir_label = Label(file_conversion_frame, text='No directory selected')
+        self.conversion_out_dir_label.pack(pady=(2, 15))
 
         Button(file_conversion_frame, text='Run', command=self.run_conversion).pack(fill=X, pady=(20, 2))
 
@@ -144,20 +158,23 @@ class XcGuiApplication:
         Label(audit_frame, text='Audits the parameters in the target file against the ones in the reference.',
               wraplength=self.tab_width - 20, justify="center").pack(pady=(2, 15))
 
-        Button(audit_frame, text='Select the reference file', command=self.file_chooser_dialog,
+        ref_file_chooser_function = partial(self.file_chooser_dialog, 2)
+        Button(audit_frame, text='Select the reference file', command=ref_file_chooser_function,
                width=25).pack()
-        ref_file_label = Label(audit_frame, text='No file selected')
-        ref_file_label.pack(pady=(2, 15))
+        self.audit_ref_file_label = Label(audit_frame, text='No file selected')
+        self.audit_ref_file_label.pack(pady=(2, 15))
 
-        Button(audit_frame, text='Select the target file', command=self.file_chooser_dialog,
+        target_file_chooser_function = partial(self.file_chooser_dialog, 3)
+        Button(audit_frame, text='Select the target file', command=target_file_chooser_function,
                width=25).pack()
-        target_file_label = Label(audit_frame, text='No file selected')
-        target_file_label.pack(pady=(2, 15))
+        self.audit_target_file_label = Label(audit_frame, text='No file selected')
+        self.audit_target_file_label.pack(pady=(2, 15))
 
-        Button(audit_frame, text='Select the output directory', command=self.dir_chooser_dialog,
+        dir_chooser_function = partial(self.dir_chooser_dialog, 2)
+        Button(audit_frame, text='Select the output directory', command=dir_chooser_function,
                width=25).pack()
-        self.out_dir_label = Label(audit_frame, text='No directory selected')
-        self.out_dir_label.pack(pady=(2, 15))
+        self.audit_out_dir_label = Label(audit_frame, text='No directory selected')
+        self.audit_out_dir_label.pack(pady=(2, 15))
 
         Button(audit_frame, text='Run', command=self.run_conversion).pack(fill=X, pady=(20, 2))
 
@@ -174,18 +191,33 @@ class XcGuiApplication:
             self.option_menu.config(state=DISABLED)
 
     # File chooser for the input file
-    def file_chooser_dialog(self):
+    def file_chooser_dialog(self, c):
         f = filedialog.askopenfilename()
         if len(f) != 0:
-            self.in_file_label.config(text=utils.trim_str(PurePath(f).name, 30))
-            self.in_file = f
+            t = utils.trim_str(PurePath(f).name, 30)
+
+            if c == 1:
+                self.conversion_in_file_label.config(text=t)
+                self.conversion_in_file = f
+            elif c == 2:
+                self.audit_ref_file_label.config(text=t)
+                self.audit_ref_file = f
+            else:
+                self.audit_target_file_label.config(text=t)
+                self.audit_target_file = f
 
     # Directory choose for the destination location
-    def dir_chooser_dialog(self):
+    def dir_chooser_dialog(self, c):
         d = filedialog.askdirectory()
         if len(d) != 0:
-            self.out_dir_label.config(text=utils.trim_str(PurePath(d).name, 30))
-            self.out_dir = d
+            t = utils.trim_str(PurePath(d).name, 30)
+
+            if c == 1:
+                self.conversion_out_dir_label.config(text=t)
+                self.conversion_out_dir = d
+            elif c == 2:
+                self.audit_out_dir_label.config(text=t)
+                self.audit_out_dir = d
 
     def check_for_updates(self):
         # check for updates
@@ -228,7 +260,7 @@ class XcGuiApplication:
 
     # Performs the file conversion operation
     def run_conversion(self):
-        if not (self.in_file and self.out_dir and self.conversion_type) or \
+        if not (self.conversion_in_file and self.conversion_out_dir and self.conversion_type) or \
                 (self.conversion_type == 'c2x' and self.csv_to_xml_operation.get() == 'none'):
             msg = 'Please make sure you have\n' \
                   '  * Selected the type of the operation\n' \
@@ -244,8 +276,8 @@ class XcGuiApplication:
             # XML to CSV Conversion
             # XML importer -> DB -> CSV exporter
             try:
-                xml_importer = XmlImporter(self.in_file, dbm)
-                csv_exporter = CsvExporter(self.out_dir, dbm)
+                xml_importer = XmlImporter(self.conversion_in_file, dbm)
+                csv_exporter = CsvExporter(self.conversion_out_dir, dbm)
 
                 xml_importer.read()
                 csv_exporter.write_all()
@@ -257,8 +289,8 @@ class XcGuiApplication:
             # CSV to XML Conversion
             # CSV importer -> DB -> XML exporter
             try:
-                csv_importer = CsvImporter(self.in_file, dbm)
-                xml_exporter = XmlExporter(self.out_dir, dbm)
+                csv_importer = CsvImporter(self.conversion_in_file, dbm)
+                xml_exporter = XmlExporter(self.conversion_out_dir, dbm)
                 xml_exporter.set_operation(self.csv_to_xml_operation.get())
 
                 table_name = csv_importer.read()
