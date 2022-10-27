@@ -15,6 +15,12 @@ class DBManager:
         self.conn.row_factory = self.__dict_factory
         self.cursor = self.conn.cursor()
 
+    # runs a given SQL query
+    def query(self, sql):
+        self.cursor.execute("begin transaction")
+        self.cursor.execute(sql)
+        self.conn.commit()
+
     # table_name - name of the table
     # cols - a list containing the column names
     def create_table(self, table_name, column_names):
