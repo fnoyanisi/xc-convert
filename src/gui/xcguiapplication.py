@@ -176,7 +176,7 @@ class XcGuiApplication:
         self.audit_out_dir_label = Label(audit_frame, text='No directory selected')
         self.audit_out_dir_label.pack(pady=(2, 15))
 
-        Button(audit_frame, text='Run', command=self.run_conversion).pack(fill=X, pady=(20, 2))
+        Button(audit_frame, text='Run', command=self.run_audit).pack(fill=X, pady=(20, 2))
 
         audit_frame.pack()
 
@@ -301,6 +301,54 @@ class XcGuiApplication:
                 return
         else:
             # never reached
+            return
+
+        messagebox.showinfo("Done", "File conversion has been completed!")
+
+    def run_audit(self):
+        if not (self.audit_ref_file and self.audit_target_file and self.audit_out_dir):
+            msg = 'Please make sure you have\n' \
+                  '  * Located the reference file\n' \
+                  '  * Located the target file\n' \
+                  '  * Specified an output directory\n'
+            messagebox.showwarning("Missing Information", msg)
+            return
+
+        dbm = DBManager()
+        dbm.create_table("reference", ['CLASS', 'DISTNAME', 'PARAMETER', 'VALUE'])
+        dbm.create_table("target", ['CLASS', 'DISTNAME', 'PARAMETER', 'VALUE'])
+        dbm.create_table("result", ['CLASS', 'REFERENCE_DISTNAME', 'TARGET_DISTNAME', 'PARAMETER',
+                                    'REFERENCE_VALUE', 'TARGET_VALUE'])
+
+        try:
+            ref_file_importer = XmlImporter(self.audit_ref_file, dbm)
+            target_file_importer = XmlImporter(self.audit_target_file, dbm)
+            csv_exporter = CsvExporter(self.audit_out_dir, dbm)
+
+            ref_file_importer.read_into("reference")
+            target_file_importer.read_into("target")
+
+            sql = """
+            insert into result
+            select 
+                target.CLASS as 'CLASS', 
+                reference.DISTNAME as 'REFERENCE_DISTNAME', 
+                target.DISTNAME as 'TARGET_DISTNAME', 
+                target.PARAMETER as 'PARAMETER', 
+                reference.VALUE as 'REFERENCE_VALUE', 
+                target.VALUE as 'TARGET_VALUE'
+            from target 
+                join reference on target.CLASS = reference.CLASS 
+                and target.PARAMETER = reference.PARAMETER 
+                and target.VALUE != reference.VALUE;
+            """
+
+            dbm.query(sql)
+
+            csv_exporter.write("result")
+        except RuntimeError as err:
+            print(err)
+            messagebox.showerror(title="Error", message=str(err))
             return
 
         messagebox.showinfo("Done", "File conversion has been completed!")
