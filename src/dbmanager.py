@@ -35,7 +35,7 @@ class DBManager:
 
     # table_name - name of the table that the data will be inserted into
     # map - a list of dictionaries containing header:value pairs
-    # unlike the insert_values_tuple() method, this method uses a dictionary for
+    # unlike the insert_values_transpose() method, this method uses a dictionary for
     # each SQL INSERT operation and column names are explicity passed to the database.
     def insert_values(self, table_name, map):
         self.cursor.execute("begin transaction")
@@ -51,7 +51,7 @@ class DBManager:
     # tuples - list of tuples containing the values to be inserted into the table. Unlike to
     # insert_values() method, this method requires the items in the tuple to be in the right
     # order (i.e. follow the column arrangement of the table)
-    def insert_values_tuple(self, table_name, tuples):
+    def insert_values_transpose(self, table_name, tuples):
         self.cursor.execute("begin transaction")
         for tp in tuples:
             values = ', '.join(f"'{w}'" for w in tp)
