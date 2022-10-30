@@ -71,6 +71,58 @@ class XmlImporter(FileImporter):
                 # write the entry into the DB
                 self.dbm.insert_values(mo_class, values)
 
+    def read_into(self, table_name):
+        self.mo_parameters = {}
+
+        list_of_managedObjects = self.__populate_parameters()
+
+        # perform the XML to CSV conversion operation
+        for mo_class in self.mo_parameters:
+            # column_names is a list of parameters which the current
+            # mo_class has
+            # we add some standard columns to the list manually
+            column_names = self.mo_parameters.get(mo_class)
+            column_names.insert(0, 'class')
+            column_names.insert(1, 'version')
+            column_names.insert(2, 'distName')
+            column_names.insert(3, 'id')
+
+            # iterate through the managedObject and update DB with the values
+            for mo_entry in list_of_managedObjects:
+                values = []
+                if mo_entry.getAttribute("class") == mo_class:
+                    mo = ManagedObject(mo_class,
+                                       mo_entry.getAttribute("version"),
+                                       mo_entry.getAttribute("distName"),
+                                       mo_entry.getAttribute("id")
+                                       )
+
+                    # get the rest of the parameters
+                    for p in mo_entry.childNodes:
+                        if p.nodeName == 'p':
+                            # a usual node like <p name="..."> blah </p>
+                            mo.add_property(p.getAttribute("name"), p.firstChild.data)
+                        elif p.nodeName == 'list':
+                            # we have a list to process
+                            list_entry = self.__read_list(p)
+                            mo.add_property(list_entry.name, list_entry)
+                        else:
+                            # don't know what this entry is, skipping
+                            pass
+
+                    values.append(mo.get_values())
+
+                # convert the array of dictionary into an array of tuples
+                # and write the entry into the DB
+                tuple_list = []
+                for d in values:
+                    for k, v in d:
+                        # the format is
+                        # managedObject class, distname, parameter, value
+                        t = (mo_class, 'distName', k, v)
+                        tuple_list.append(t)
+                self.dbm.insert_values_transpose(table_name, tuple_list)
+
     # method to populate self.headers dictionary and returns a list of
     # all the managed objects
     def __populate_parameters(self):
