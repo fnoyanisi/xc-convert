@@ -1,5 +1,8 @@
 """
 Gets data from the DB and writes into a CSV file
+
+Copyright (c) 2017-2022 Fehmi Noyan ISI. All rights reserved.
+See the LICENSE file for the end user license agreement.
 """
 from src.exporter.fileexporter import FileExporter
 from pathlib import PurePath
@@ -17,6 +20,7 @@ class CsvExporter(FileExporter):
         self.out_dir = o
         self.dbm = d
 
+    # writes the data in table_name into the output file
     def write(self, table_name):
         now = datetime.datetime.now()
         timestamp = now.strftime('%Y-%m-%dT%H-%M-%S')
@@ -34,6 +38,7 @@ class CsvExporter(FileExporter):
                 updated_row = {k: self.missing_val_str if not v else v for (k, v) in row.items()}
                 writer.writerow(updated_row)
 
+    # writes all the data in the database to the output file
     def write_all(self):
         for table_name in self.dbm.get_table_names():
             self.write(table_name)

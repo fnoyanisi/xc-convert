@@ -12,9 +12,13 @@ represents a managedObject entry in an XML file of the form
        </list>
        ....
      </managedObject>
+
+Copyright (c) 2017-2022 Fehmi Noyan ISI. All rights reserved.
+See the LICENSE file for the end user license agreement.
 """
 from src.xmlds.xmlentry import XmlEntry
 from src.xmlds.xmlentry import XmlEntryType
+
 
 class ManagedObject(XmlEntry):
     # constructor

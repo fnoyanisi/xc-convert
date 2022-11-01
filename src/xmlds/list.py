@@ -10,6 +10,9 @@ represents a list entry in an XML DOM of the form
             ...
             </item>
        </list>
+
+Copyright (c) 2017-2022 Fehmi Noyan ISI. All rights reserved.
+See the LICENSE file for the end user license agreement.
 """
 from src.xmlds.xmlentry import XmlEntry
 from src.xmlds.xmlentry import XmlEntryType

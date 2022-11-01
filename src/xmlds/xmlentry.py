@@ -1,6 +1,9 @@
 """
 Base class for more complex entries in the XML file
 This can be subclassed by a managed object, a list or an item
+
+Copyright (c) 2017-2022 Fehmi Noyan ISI. All rights reserved.
+See the LICENSE file for the end user license agreement.
 """
 
 from enum import Enum

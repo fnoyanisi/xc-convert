@@ -1,6 +1,10 @@
 """
 GUI Layout for xc-converter
+
+Copyright (c) 2017-2022 Fehmi Noyan ISI. All rights reserved.
+See the LICENSE file for the end user license agreement.
 """
+
 from tkinter import *
 from tkinter import filedialog
 from tkinter import messagebox

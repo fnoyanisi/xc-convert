@@ -1,5 +1,8 @@
 """
 Reads the data from DB and writes into an XML file
+
+Copyright (c) 2017-2022 Fehmi Noyan ISI. All rights reserved.
+See the LICENSE file for the end user license agreement.
 """
 from src.exporter.fileexporter import FileExporter
 from pathlib import PurePath

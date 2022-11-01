@@ -1,5 +1,8 @@
 """
 Reads a CSV file into the database
+
+Copyright (c) 2017-2022 Fehmi Noyan ISI. All rights reserved.
+See the LICENSE file for the end user license agreement.
 """
 from src.importer.fileimporter import FileImporter
 from pathlib import PurePath
