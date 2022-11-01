@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # prefer anaconda
-PYTHON='/usr/local/anaconda3/bin/python3'
+PYTHON='/usr/local/anaconda3/bin/pythonw'
 
 if ! test -f "$PYTHON"; then
 	PYTHON=`which python3`
