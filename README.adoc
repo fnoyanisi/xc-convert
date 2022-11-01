@@ -17,8 +17,10 @@ The application uses "importer" and "exporter" classes as the front-end and the 
 
 == Version History
 * *version 0.8 (beta) - (October 2022)*
-** Using a DB for the middle-tier
-** Improved the documentation
+** New GUI layout
+** Parameter audit functionality added
+** Using SQLite for the middle-tier
+** Improved documentation
 
 * *version 0.7.2 (beta) - (September 2022)*
 ** Bug fixes
