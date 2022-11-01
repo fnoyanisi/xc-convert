@@ -25,6 +25,7 @@ class XmlImporter(FileImporter):
         self.__check_format()  # format validation
 
     def read(self):
+        # mo_parameters has mo_class:all_the_parameters mapping
         self.mo_parameters = {}
 
         list_of_managedObjects = self.__populate_parameters()
@@ -71,8 +72,16 @@ class XmlImporter(FileImporter):
                 # write the entry into the DB
                 self.dbm.insert_values(mo_class, values)
 
-    def read_into(self, table_name):
+    # reads the XML file into a DB table with extra arguments
+    # table_name    -   name of the SQL table
+    # unique        -   is this options is selected, each MO class is only read once. i.e. the
+    #                   first mo for each class is read into the DB and the rest id ignored
+    # transpose     -   transpose the input row and convert into a list of tuples in the form
+    #                   of (parameterName, value) pairs.
+    def read_into(self, table_name, unique, transpose):
+        # mo_parameters has mo_class:all_the_parameters mapping
         self.mo_parameters = {}
+        iterated_classes = set()    # only applicable when unique = True
 
         list_of_managedObjects = self.__populate_parameters()
 
@@ -90,38 +99,50 @@ class XmlImporter(FileImporter):
             # iterate through the managedObject and update DB with the values
             for mo_entry in list_of_managedObjects:
                 values = []
-                if mo_entry.getAttribute("class") == mo_class:
-                    mo = ManagedObject(mo_class,
-                                       mo_entry.getAttribute("version"),
-                                       mo_entry.getAttribute("distName"),
-                                       mo_entry.getAttribute("id")
-                                       )
 
-                    # get the rest of the parameters
-                    for p in mo_entry.childNodes:
-                        if p.nodeName == 'p':
-                            # a usual node like <p name="..."> blah </p>
-                            mo.add_property(p.getAttribute("name"), p.firstChild.data)
-                        elif p.nodeName == 'list':
-                            # we have a list to process
-                            list_entry = self.__read_list(p)
-                            mo.add_property(list_entry.name, list_entry)
-                        else:
-                            # don't know what this entry is, skipping
-                            pass
+                # to ensure each mo class has only one entry
+                # iterated_classes would be empty if unique = False
+                # hence the test below will evaluate to True all the tim
+                if mo_class not in iterated_classes:
+                    if unique:
+                        iterated_classes.add(mo_class)
 
-                    values.append(mo.get_values())
+                    if mo_entry.getAttribute("class") == mo_class:
+                        mo = ManagedObject(mo_class,
+                                           mo_entry.getAttribute("version"),
+                                           mo_entry.getAttribute("distName"),
+                                           mo_entry.getAttribute("id")
+                                           )
 
-                # convert the array of dictionary into an array of tuples
-                # and write the entry into the DB
-                tuple_list = []
-                for d in values:
-                    for k, v in d:
-                        # the format is
-                        # managedObject class, distname, parameter, value
-                        t = (mo_class, 'distName', k, v)
-                        tuple_list.append(t)
-                self.dbm.insert_values_transpose(table_name, tuple_list)
+                        # get the rest of the parameters
+                        for p in mo_entry.childNodes:
+                            if p.nodeName == 'p':
+                                # a usual node like <p name="..."> blah </p>
+                                mo.add_property(p.getAttribute("name"), p.firstChild.data)
+                            elif p.nodeName == 'list':
+                                # we have a list to process
+                                list_entry = self.__read_list(p)
+                                mo.add_property(list_entry.name, list_entry)
+                            else:
+                                # don't know what this entry is, skipping
+                                pass
+
+                        values.append(mo.get_values())
+
+                    if transpose:
+                        # convert the array of dictionary into an array of tuples
+                        # and write the entry into the DB
+                        tuple_list = []
+                        for d in values:
+                            for k, v in d.items():
+                                # the format is
+                                # managedObject class, distname, parameter, value
+                                t = (mo_class, 'distName', k, v)
+                                tuple_list.append(t)
+                        self.dbm.insert_values_transpose(table_name, tuple_list)
+                    else:
+                        # write the entry into the DB
+                        self.dbm.insert_values(mo_class, values)
 
     # method to populate self.headers dictionary and returns a list of
     # all the managed objects
