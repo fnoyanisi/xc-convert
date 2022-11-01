@@ -317,7 +317,7 @@ class XcGuiApplication:
         dbm = DBManager()
         dbm.create_table("reference", ['CLASS', 'DISTNAME', 'PARAMETER', 'VALUE'])
         dbm.create_table("target", ['CLASS', 'DISTNAME', 'PARAMETER', 'VALUE'])
-        dbm.create_table("result", ['CLASS', 'REFERENCE_DISTNAME', 'TARGET_DISTNAME', 'PARAMETER',
+        dbm.create_table("audit_result", ['CLASS', 'REFERENCE_DISTNAME', 'TARGET_DISTNAME', 'PARAMETER',
                                     'REFERENCE_VALUE', 'TARGET_VALUE'])
 
         try:
@@ -325,11 +325,11 @@ class XcGuiApplication:
             target_file_importer = XmlImporter(self.audit_target_file, dbm)
             csv_exporter = CsvExporter(self.audit_out_dir, dbm)
 
-            ref_file_importer.read_into("reference")
-            target_file_importer.read_into("target")
+            ref_file_importer.read_into(table_name="reference", unique=True, transpose=True)
+            target_file_importer.read_into(table_name="target", unique=False, transpose=True)
 
             sql = """
-            insert into result
+            insert into audit_result
             select 
                 target.CLASS as 'CLASS', 
                 reference.DISTNAME as 'REFERENCE_DISTNAME', 
@@ -345,7 +345,7 @@ class XcGuiApplication:
 
             dbm.query(sql)
 
-            csv_exporter.write("result")
+            csv_exporter.write("audit_result")
         except RuntimeError as err:
             print(err)
             messagebox.showerror(title="Error", message=str(err))
