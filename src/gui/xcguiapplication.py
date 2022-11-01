@@ -10,8 +10,8 @@ from pathlib import PurePath
 from functools import partial
 
 from src.exporter.xmlexporter import XmlExporter
-from src.importer.xmlimporter import XmlImporter
 from src.exporter.csvexporter import CsvExporter
+from src.importer.xmlimporter import XmlImporter
 from src.importer.csvimporter import CsvImporter
 from src.updatemngr import UpdateManager
 from src.dbmanager import DBManager
@@ -26,7 +26,7 @@ class XcGuiApplication:
 
     def read_version(self):
         try:
-            with open(self.p + "VERSION") as f:
+            with open(self.p + "etc/VERSION") as f:
                 self.version = f.readline().strip()
         except IOError as e:
             messagebox.showerror("IO Error", "Error while opening the VERSION file")
@@ -235,7 +235,7 @@ class XcGuiApplication:
         about_label.grid(row=0, column=0, columnspan=2, sticky=W + E + N + S, padx=10, pady=10)
 
         try:
-            with open(self.p + 'LICENSE') as licensefile:
+            with open(self.p + 'etc/LICENSE') as licensefile:
                 license_text = licensefile.read()
                 dialog_text = Text(about_dialog, borderwidth=3, relief="sunken")
                 dialog_text.insert(INSERT, license_text)
@@ -305,6 +305,7 @@ class XcGuiApplication:
 
         messagebox.showinfo("Done", "File conversion has been completed!")
 
+    # performs the parameter audit operation
     def run_audit(self):
         if not (self.audit_ref_file and self.audit_target_file and self.audit_out_dir):
             msg = 'Please make sure you have\n' \
@@ -351,4 +352,4 @@ class XcGuiApplication:
             messagebox.showerror(title="Error", message=str(err))
             return
 
-        messagebox.showinfo("Done", "File conversion has been completed!")
+        messagebox.showinfo("Done", "Parameter audit has been completed!")
