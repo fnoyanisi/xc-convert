@@ -14,5 +14,5 @@ else
   echo "starting xc-convert..."
   export PYTHONPATH=`pwd`
   cd ./src
-	$PYTHON xc-convert.py
+	$PYTHON xcc.py
 fi

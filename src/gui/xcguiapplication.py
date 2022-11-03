@@ -80,7 +80,7 @@ class XcGuiApplication:
         Label(self.left_frame, text='\nRAN helper utility (v' + self.version + ')',
               font='Helvetica 13 bold').pack(padx=(10,5))
         Label(self.left_frame, text=('\nFile conversion and RAN audit utility.\n\n'
-                                     'Please see the "About" section for the license information.')
+                                     'Please see the "Help" section for the license information.')
               , wraplength=200, justify=LEFT).pack(padx=(10,5))
 
         # Buttons
@@ -106,7 +106,7 @@ class XcGuiApplication:
         button_frame = Frame(parent)
 
         Button(button_frame, text='Check for Updates', command=self.check_for_updates).pack(fill=X, pady=5)
-        Button(button_frame, text='About', command=self.about_dialog).pack(fill=X, pady=5)
+        Button(button_frame, text='Help', command=self.help_dialog).pack(fill=X, pady=5)
         Button(button_frame, text='Quit', command=r.destroy).pack(fill=X, pady=5)
 
         return button_frame
@@ -229,37 +229,37 @@ class XcGuiApplication:
         um.check_for_updates(self.version, False)
 
     # Displays the license information
-    def about_dialog(self):
-        about_dialog = Toplevel(self.root)
-        about_dialog.wm_title('About xc-converter ' + self.version)
-        about_dialog.resizable(width=False, height=False)
+    def help_dialog(self):
+        help_dialog = Toplevel(self.root)
+        help_dialog.wm_title('About xcc ' + self.version)
+        help_dialog.resizable(width=False, height=False)
 
         about_label_text = 'Use of this software is subject to license conditions given below.'
-        about_label = Label(about_dialog, text=about_label_text)
+        about_label = Label(help_dialog, text=about_label_text)
         about_label.grid(row=0, column=0, columnspan=2, sticky=W + E + N + S, padx=10, pady=10)
 
         try:
             with open(self.p + 'etc/LICENSE') as licensefile:
                 license_text = licensefile.read()
-                dialog_text = Text(about_dialog, borderwidth=3, relief="sunken")
+                dialog_text = Text(help_dialog, borderwidth=3, relief="sunken")
                 dialog_text.insert(INSERT, license_text)
                 dialog_text.config(state=DISABLED)
                 dialog_text.grid(row=1, column=0, sticky=W + E + N + S, padx=2, pady=0)
 
-                scrollbar = Scrollbar(about_dialog, command=dialog_text.yview)
+                scrollbar = Scrollbar(help_dialog, command=dialog_text.yview)
                 scrollbar.grid(row=1, column=1, sticky='nsew')
                 dialog_text['yscrollcommand'] = scrollbar.set
 
         except OSError:
             error_text = ('Opps...Cannot find the LICENSE file.\n\n'
                           'Please get the LICENSE file from https://github.com/fnoyanisi/xc-convert')
-            Label(about_dialog, text=error_text).grid(row=1, sticky=W + E + N + S, padx=10, pady=10)
+            Label(help_dialog, text=error_text).grid(row=1, sticky=W + E + N + S, padx=10, pady=10)
 
         download_url = 'You can obtain the source code from https://github.com/fnoyanisi/xc-convert'
-        Label(about_dialog, text=download_url, justify=LEFT).grid(row=2, column=0, columnspan=2, sticky=W + E + N + S,
+        Label(help_dialog, text=download_url, justify=LEFT).grid(row=2, column=0, columnspan=2, sticky=W + E + N + S,
                                                                   padx=10, pady=10)
 
-        Button(about_dialog, text='Close', command=about_dialog.destroy, width=25).grid(row=3, column=0, columnspan=2,
+        Button(help_dialog, text='Close', command=help_dialog.destroy, width=25).grid(row=3, column=0, columnspan=2,
                                                                                         sticky=N + S, padx=0, pady=10)
 
     # Performs the file conversion operation

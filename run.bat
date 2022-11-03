@@ -18,14 +18,14 @@ exit /b 0
 
 if exist "C:\Program Files\Python\Python39" (
 	call :DisplayHeader
-	"C:\Program Files\Python\Python39\python.exe" src\xc-convert.py
+	"C:\Program Files\Python\Python39\python.exe" src\xcc.py
 	exit
 )
 
 if exist "C:\Program Files\Anaconda3\condabin\activate.bat" (
 	call :DisplayHeader
 	call "C:\Program Files\Anaconda3\condabin\activate.bat" activate 	
-	python src\xc-convert.py
+	python src\xcc.py
 	exit
 )
 
