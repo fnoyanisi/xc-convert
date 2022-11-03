@@ -152,7 +152,7 @@ class XcGuiApplication:
         self.conversion_out_dir_label = Label(file_conversion_frame, text='No directory selected')
         self.conversion_out_dir_label.pack(pady=(2, 15))
 
-        Button(file_conversion_frame, text='Run', command=self.run_conversion).pack(fill=X, pady=(20, 2))
+        Button(file_conversion_frame, width=25, text='Run', command=self.run_conversion).pack(pady=(20, 2))
 
         file_conversion_frame.pack()
 
@@ -180,7 +180,7 @@ class XcGuiApplication:
         self.audit_out_dir_label = Label(audit_frame, text='No directory selected')
         self.audit_out_dir_label.pack(pady=(2, 15))
 
-        Button(audit_frame, text='Run', command=self.run_audit).pack(fill=X, pady=(20, 2))
+        Button(audit_frame, width=25, text='Run', command=self.run_audit).pack(pady=(20, 2))
 
         audit_frame.pack()
 
