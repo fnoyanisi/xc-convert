@@ -12,6 +12,7 @@ from tkinter import ttk
 class XcHelpDialog:
     url = "https://github.com/fnoyanisi/xc-convert"
     license_file_path = "etc/LICENSE"
+    help_file_path = "etc/HELP"
     fpath = None
     version = None
     root = None
@@ -32,15 +33,42 @@ class XcHelpDialog:
         top_frame = Frame(self.top_dialog)
         top_frame.pack()
 
-        # notebook = ttk.Notebook(top_dialog)
-        # notebook.pack()
+        notebook = ttk.Notebook(top_frame)
+        notebook.pack()
 
-        self.get_about_frame(top_frame)
+        license_frame = Frame(top_frame)
+        help_frame = Frame(top_frame)
 
-    def get_about_frame(self, root):
-        about_label_text = 'Use of this software is subject to license conditions given below.'
-        about_label = Label(root, text=about_label_text)
-        about_label.grid(row=0, column=0, columnspan=2, sticky=W + E + N + S, padx=10, pady=10)
+        self.get_help_frame(help_frame)
+        self.get_license_frame(license_frame)
+
+        notebook.add(help_frame, text="Help")
+        notebook.add(license_frame, text="License")
+
+    def get_help_frame(self, root):
+        try:
+            with open(self.fpath + self.help_file_path) as help_file:
+                help_text = help_file.read()
+                dialog_text = Text(root, borderwidth=3, relief="sunken")
+                dialog_text.insert(INSERT, help_text)
+                dialog_text.config(state=DISABLED)
+                dialog_text.grid(row=1, column=0, sticky=W + E + N + S, padx=2, pady=0)
+
+                scrollbar = Scrollbar(root, command=dialog_text.yview)
+                scrollbar.grid(row=1, column=1, sticky='nsew')
+                dialog_text['yscrollcommand'] = scrollbar.set
+
+        except OSError:
+            error_text = ('Opps...Cannot find the HELP file.\n\n'
+                          'Please obtain the HELP file from ' + self.url)
+            Label(root, text=error_text).grid(row=1, sticky=W + E + N + S, padx=10, pady=10)
+
+        Button(root, text='Close', command=self.top_dialog.destroy, width=25).grid(row=2, column=0, columnspan=2,
+                                                                                   sticky=N + S, padx=0, pady=10)
+    def get_license_frame(self, root):
+        license_label_text = 'Use of this software is subject to license conditions given below.'
+        license_label = Label(root, text=license_label_text)
+        license_label.grid(row=0, column=0, columnspan=2, sticky=W + E + N + S, padx=10, pady=10)
 
         try:
             with open(self.fpath + self.license_file_path) as license_file:
@@ -56,12 +84,12 @@ class XcHelpDialog:
 
         except OSError:
             error_text = ('Opps...Cannot find the LICENSE file.\n\n'
-                          'Please get the LICENSE file from ' + self.url)
+                          'Please obtain the LICENSE file from ' + self.url)
             Label(root, text=error_text).grid(row=1, sticky=W + E + N + S, padx=10, pady=10)
 
         download_url_msg = 'You can obtain the source code from ' + self.url
         Label(root, text=download_url_msg, justify=LEFT).grid(row=2, column=0, columnspan=2, sticky=W + E + N + S,
-                                                          padx=10, pady=10)
+                                                              padx=10, pady=10)
 
         Button(root, text='Close', command=self.top_dialog.destroy, width=25).grid(row=3, column=0, columnspan=2,
-                                                                        sticky=N + S, padx=0, pady=10)
+                                                                                   sticky=N + S, padx=0, pady=10)
