@@ -16,18 +16,6 @@ class XcHelpDialog:
     def __init__(self, root, version, fpath):
         top_dialog = Toplevel(root)
 
-        # notebook = ttk.Notebook(top_dialog)
-        # notebook.pack()
-        #
-        # help_frame = Frame(self.notebook)
-        # about_frame = Frame(self.notebook)
-        #
-        # self.get_file_conversion_layout(tab1_frame)
-        # self.get_audit_layout(tab2_frame)
-        #
-        # self.notebook.add(help_frame, text="File Conversion")
-        # self.notebook.add(about_frame, text="Parameter Audit")
-
         top_dialog.wm_title('About xcc ' + version)
         top_dialog.resizable(width=False, height=False)
 
