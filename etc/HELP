@@ -1,0 +1,58 @@
+XCC HELP
+===============================================================================
+
+CONTENTS
+---------------------------------------
+1. FILE CONVERSION
+    1.1 XML to CSV Conversion
+    1.2 CSV to XML Conversion
+2. PARAMETER AUDIT
+
+1 . FILE CONVERSION
+---------------------------------------
+This function is used to convert XML files into CSV (Comma Separated Values)
+and vice-versa.
+
+    1.1 XML to CSV Conversion
+    ---------------------------------------
+    From "Select the input file" dialog, select the XML file that will be
+    converted into CSV format.
+
+    From "Select the output directory" dialog, select the the directory
+    where the generated CSV file will be written into.
+
+    1.2 CSV to XML Conversion
+    ---------------------------------------
+    From "Select the input file" dialog, select the CSV file that will be
+    converted into XML format. There is an expected CSV format by the tool.
+    If you are not sure, convert an XML file into CSV first.
+
+    The "Type of operation" drop-down menu can be used to set the operation
+    type for CSV to XML conversion.
+
+    From "Select the output directory" dialog, select the the directory
+    where the generated CSV file will be written into.
+
+2. PARAMETER AUDIT
+---------------------------------------
+At the moment, this function does not support CSV file format, hence all
+the input files have to be in XML format.
+
+From "Select the reference file" dialog, locate the file that contains
+the configuration of the reference cell-site for the audit operation. In
+case the configuration file includes multiple managed-objects for a certain
+managed-object class, the first one that is parsed by the tool is taken as
+the "reference" and the rest are ignored. e.g. if the configuration XML file
+includes settings for three cells (Cell1, Cell2, Cell3), only the data for
+the first cell is parsed and the rest will be ignored. In this case, the
+"reference" cell object will be "Cell1"
+
+"Select the target file" dialog lets you locate the XML file which includes
+the configuration of the managed-objects you want the audit for. Parameters
+of all the objects under each managed-object class contained in this file
+will be compared against the "reference" object. If a managed-object class
+is not included in the "reference", it is ignored.
+
+From "Select the output directory" dialog, select the the directory
+where the generated CSV file will be written into.
+
