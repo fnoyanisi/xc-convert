@@ -45,10 +45,16 @@ class XcHelpDialog:
         notebook.add(help_frame, text="Help")
         notebook.add(license_frame, text="License")
 
-    def get_help_frame(self, root):
+    # utility function that reads a file and displays the contents in a
+    # text field
+    def __content_display(self, root, toptxt, filep, errortxt, bottomtxt):
+        label_text = toptxt
+        label = Label(root, text=label_text)
+        label.grid(row=0, column=0, columnspan=2, sticky=W + E + N + S, padx=10, pady=10)
+
         try:
-            with open(self.fpath + self.help_file_path) as help_file:
-                help_text = help_file.read()
+            with open(self.fpath + filep) as in_file:
+                help_text = in_file.read()
                 dialog_text = Text(root, borderwidth=3, relief="sunken")
                 dialog_text.insert(INSERT, help_text)
                 dialog_text.config(state=DISABLED)
@@ -59,37 +65,22 @@ class XcHelpDialog:
                 dialog_text['yscrollcommand'] = scrollbar.set
 
         except OSError:
-            error_text = ('Opps...Cannot find the HELP file.\n\n'
-                          'Please obtain the HELP file from ' + self.url)
-            Label(root, text=error_text).grid(row=1, sticky=W + E + N + S, padx=10, pady=10)
+            Label(root, text=errortxt).grid(row=1, sticky=W + E + N + S, padx=10, pady=10)
 
-        Button(root, text='Close', command=self.top_dialog.destroy, width=25).grid(row=2, column=0, columnspan=2,
-                                                                                   sticky=N + S, padx=0, pady=10)
-    def get_license_frame(self, root):
-        license_label_text = 'Use of this software is subject to license conditions given below.'
-        license_label = Label(root, text=license_label_text)
-        license_label.grid(row=0, column=0, columnspan=2, sticky=W + E + N + S, padx=10, pady=10)
-
-        try:
-            with open(self.fpath + self.license_file_path) as license_file:
-                license_text = license_file.read()
-                dialog_text = Text(root, borderwidth=3, relief="sunken")
-                dialog_text.insert(INSERT, license_text)
-                dialog_text.config(state=DISABLED)
-                dialog_text.grid(row=1, column=0, sticky=W + E + N + S, padx=2, pady=0)
-
-                scrollbar = Scrollbar(root, command=dialog_text.yview)
-                scrollbar.grid(row=1, column=1, sticky='nsew')
-                dialog_text['yscrollcommand'] = scrollbar.set
-
-        except OSError:
-            error_text = ('Opps...Cannot find the LICENSE file.\n\n'
-                          'Please obtain the LICENSE file from ' + self.url)
-            Label(root, text=error_text).grid(row=1, sticky=W + E + N + S, padx=10, pady=10)
-
-        download_url_msg = 'You can obtain the source code from ' + self.url
-        Label(root, text=download_url_msg, justify=LEFT).grid(row=2, column=0, columnspan=2, sticky=W + E + N + S,
-                                                              padx=10, pady=10)
+        Label(root, text=bottomtxt, justify=LEFT).grid(row=2, column=0, columnspan=2, sticky=W + E + N + S,
+                                                       padx=10, pady=10)
 
         Button(root, text='Close', command=self.top_dialog.destroy, width=25).grid(row=3, column=0, columnspan=2,
                                                                                    sticky=N + S, padx=0, pady=10)
+
+    def get_help_frame(self, root):
+        error_text = 'Opps...Cannot find the HELP file.\n\n' \
+                     'Please obtain the HELP file from ' + self.url
+        self.__content_display(root, "XCC HELP", self.help_file_path, error_text, "")
+
+    def get_license_frame(self, root):
+        top_txt = 'Use of this software is subject to license conditions given below.'
+        error_text = 'Opps...Cannot find the LICENSE file.\n\n' \
+                     'Please obtain the LICENSE file from ' + self.url
+        bottom_text = 'You can obtain the source code from ' + self.url
+        self.__content_display(root, top_txt, self.license_file_path, error_text, bottom_text)
