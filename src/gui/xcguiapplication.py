@@ -19,6 +19,7 @@ from src.importer.xmlimporter import XmlImporter
 from src.importer.csvimporter import CsvImporter
 from src.updatemngr import UpdateManager
 from src.dbmanager import DBManager
+from src.gui.xchelpdialog import XcHelpDialog
 
 import src.utils as utils
 
@@ -230,36 +231,39 @@ class XcGuiApplication:
 
     # Displays the license information
     def help_dialog(self):
-        help_dialog = Toplevel(self.root)
-        help_dialog.wm_title('About xcc ' + self.version)
-        help_dialog.resizable(width=False, height=False)
+        hd = XcHelpDialog(self.root, self.version, self.p)
+    def help_dialog2(self):
+        top_dialog = Toplevel(self.root)
+
+        top_dialog.wm_title('About xcc ' + self.version)
+        top_dialog.resizable(width=False, height=False)
 
         about_label_text = 'Use of this software is subject to license conditions given below.'
-        about_label = Label(help_dialog, text=about_label_text)
+        about_label = Label(top_dialog, text=about_label_text)
         about_label.grid(row=0, column=0, columnspan=2, sticky=W + E + N + S, padx=10, pady=10)
 
         try:
             with open(self.p + 'etc/LICENSE') as licensefile:
                 license_text = licensefile.read()
-                dialog_text = Text(help_dialog, borderwidth=3, relief="sunken")
+                dialog_text = Text(top_dialog, borderwidth=3, relief="sunken")
                 dialog_text.insert(INSERT, license_text)
                 dialog_text.config(state=DISABLED)
                 dialog_text.grid(row=1, column=0, sticky=W + E + N + S, padx=2, pady=0)
 
-                scrollbar = Scrollbar(help_dialog, command=dialog_text.yview)
+                scrollbar = Scrollbar(top_dialog, command=dialog_text.yview)
                 scrollbar.grid(row=1, column=1, sticky='nsew')
                 dialog_text['yscrollcommand'] = scrollbar.set
 
         except OSError:
             error_text = ('Opps...Cannot find the LICENSE file.\n\n'
                           'Please get the LICENSE file from https://github.com/fnoyanisi/xc-convert')
-            Label(help_dialog, text=error_text).grid(row=1, sticky=W + E + N + S, padx=10, pady=10)
+            Label(top_dialog, text=error_text).grid(row=1, sticky=W + E + N + S, padx=10, pady=10)
 
         download_url = 'You can obtain the source code from https://github.com/fnoyanisi/xc-convert'
-        Label(help_dialog, text=download_url, justify=LEFT).grid(row=2, column=0, columnspan=2, sticky=W + E + N + S,
+        Label(top_dialog, text=download_url, justify=LEFT).grid(row=2, column=0, columnspan=2, sticky=W + E + N + S,
                                                                   padx=10, pady=10)
 
-        Button(help_dialog, text='Close', command=help_dialog.destroy, width=25).grid(row=3, column=0, columnspan=2,
+        Button(top_dialog, text='Close', command=top_dialog.destroy, width=25).grid(row=3, column=0, columnspan=2,
                                                                                         sticky=N + S, padx=0, pady=10)
 
     # Performs the file conversion operation
