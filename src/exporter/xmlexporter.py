@@ -29,14 +29,14 @@ class XmlExporter(FileExporter):
 
         now = datetime.datetime.now()
         timestamp = now.strftime('%Y-%m-%dT%H-%M-%S')
-        out_file_name = table_name.rsplit('_', 1)[0] + '_' + timestamp + '.xmlds'
+        out_file_name = table_name.rsplit('_', 1)[0] + '_' + timestamp + '.xml'
         path_to_xml_file = PurePath(self.out_dir, out_file_name)
 
         # try opening the XML file for writing the data
         # the caller should handle the exception
         with open(path_to_xml_file, 'w') as xmlfile:
             # write standard XML information at the top
-            xmlfile.write('<?xmlds version="1.0" encoding="UTF-8"?>\n')
+            xmlfile.write('<?xml version="1.0" encoding="UTF-8"?>\n')
             xmlfile.write('<!DOCTYPE raml SYSTEM \'raml20.dtd\'>\n')
             xmlfile.write('<raml version="2.0" xmlns="raml20.xsd">\n')
             xmlfile.write('\t<cmData type="actual">\n')
