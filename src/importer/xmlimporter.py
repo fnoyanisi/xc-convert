@@ -77,8 +77,8 @@ class XmlImporter(FileImporter):
 
     # reads the XML file into a DB table with extra arguments
     # table_name    -   name of the SQL table
-    # unique        -   is this options is selected, each MO class is only read once. i.e. the
-    #                   first mo for each class is read into the DB and the rest id ignored
+    # unique        -   if this options is selected, each MO class is only read once. i.e. the
+    #                   first mo for each class is read into the DB and the rest is ignored
     # transpose     -   transpose the input row and convert into a list of tuples in the form
     #                   of (parameterName, value) pairs.
     def read_into(self, table_name, unique, transpose):
@@ -137,10 +137,11 @@ class XmlImporter(FileImporter):
                         # and write the entry into the DB
                         tuple_list = []
                         for d in values:
+                            distname = d.get('distName')
                             for k, v in d.items():
                                 # the format is
-                                # managedObject class, distname, parameter, value
-                                t = (mo_class, 'distName', k, v)
+                                # managedObject class, zx, parameter, value
+                                t = (mo_class, distname, k, v)
                                 tuple_list.append(t)
                         self.dbm.insert_values_transpose(table_name, tuple_list)
                     else:
