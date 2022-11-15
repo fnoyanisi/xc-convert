@@ -106,31 +106,30 @@ class XmlImporter(FileImporter):
                 # to ensure each mo class has only one entry
                 # iterated_classes would be empty if unique = False
                 # hence the test below will evaluate to True all the tim
-                if mo_class not in iterated_classes:
+                if mo_class not in iterated_classes and mo_entry.getAttribute("class") == mo_class:
                     if unique:
                         iterated_classes.add(mo_class)
 
-                    if mo_entry.getAttribute("class") == mo_class:
-                        mo = ManagedObject(mo_class,
-                                           mo_entry.getAttribute("version"),
-                                           mo_entry.getAttribute("distName"),
-                                           mo_entry.getAttribute("id")
-                                           )
+                    mo = ManagedObject(mo_class,
+                                       mo_entry.getAttribute("version"),
+                                       mo_entry.getAttribute("distName"),
+                                       mo_entry.getAttribute("id")
+                                       )
 
-                        # get the rest of the parameters
-                        for p in mo_entry.childNodes:
-                            if p.nodeName == 'p':
-                                # a usual node like <p name="..."> blah </p>
-                                mo.add_property(p.getAttribute("name"), p.firstChild.data)
-                            elif p.nodeName == 'list':
-                                # we have a list to process
-                                list_entry = self.__read_list(p)
-                                mo.add_property(list_entry.name, list_entry)
-                            else:
-                                # don't know what this entry is, skipping
-                                pass
+                    # get the rest of the parameters
+                    for p in mo_entry.childNodes:
+                        if p.nodeName == 'p':
+                            # a usual node like <p name="..."> blah </p>
+                            mo.add_property(p.getAttribute("name"), p.firstChild.data)
+                        elif p.nodeName == 'list':
+                            # we have a list to process
+                            list_entry = self.__read_list(p)
+                            mo.add_property(list_entry.name, list_entry)
+                        else:
+                            # don't know what this entry is, skipping
+                            pass
 
-                        values.append(mo.get_values())
+                    values.append(mo.get_values())
 
                     if transpose:
                         # convert the array of dictionary into an array of tuples
