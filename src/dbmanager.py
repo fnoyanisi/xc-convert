@@ -6,7 +6,9 @@ See the LICENSE file for the end user license agreement.
 """
 import sqlite3
 
-
+# This class prepends the "table_name" parameter passed to any of
+# its methods with "t_" to guarantee SQLite table naming convention
+# which prevents table name starting with numeric characters
 class DBManager:
     cursor = None
     conn = None
@@ -27,6 +29,7 @@ class DBManager:
     # table_name - name of the table
     # cols - a list containing the column names
     def create_table(self, table_name, column_names):
+        table_name = "t_" + table_name
         sql = 'DROP TABLE IF EXISTS ' + table_name
         self.cursor.execute(sql)
         self.conn.commit()
@@ -41,6 +44,7 @@ class DBManager:
     # unlike the insert_values_transpose() method, this method uses a dictionary for
     # each SQL INSERT operation and column names are explicity passed to the database.
     def insert_values(self, table_name, map):
+        table_name = "t_" + table_name
         self.cursor.execute("begin transaction")
         for entry in map:
             # wrap the column names within quotes to escape special chars
@@ -55,6 +59,7 @@ class DBManager:
     # insert_values() method, this method requires the items in the tuple to be in the right
     # order (i.e. follow the column arrangement of the table)
     def insert_values_transpose(self, table_name, tuples):
+        table_name = "t_" + table_name
         self.cursor.execute("begin transaction")
         for tp in tuples:
             values = ', '.join(f"'{w}'" for w in tp)
@@ -66,6 +71,7 @@ class DBManager:
     # returns a generator which yields one row from them target DB table
     # in each iteration
     def get_rows(self, table_name):
+        table_name = "t_" + table_name
         for row in self.conn.execute("select * from " + table_name):
             yield row
 
@@ -81,7 +87,8 @@ class DBManager:
         res = []
         sql = "SELECT name FROM sqlite_master WHERE type='table'"
         for t in self.cursor.execute(sql).fetchall():
-            res.append(t['name'])
+            tn = t['name'][2:]
+            res.append(tn)
         return res
 
     def __dict_factory(self, cursor, row):
