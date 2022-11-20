@@ -2,8 +2,6 @@
 
 _xc-convert_ is a simple utility tool to convert Nokia system generated XML files in to CSV files and vice versa.
 
-_xc-convert_ is developed by mailto:fnoyanisi@yahoo.com[Fehmi Noyan ISI]
-
 == Documentation
 
 The application uses "importer" and "exporter" classes as the front-end and the back-end, respectively. An SQLite database acts as the middle-tier, providing a sophisticated and optimised layer for data storage and various other operations.
