@@ -4,7 +4,7 @@ _xc-convert_ is a simple utility tool to convert Nokia system generated XML file
 
 == Documentation
 
-The application uses "importer" and "exporter" classes as the front-end and the back-end, respectively. An SQLite database acts as the middle-tier, providing a sophisticated and optimised layer for data storage and various other operations.
+The application uses "importer" and "exporter" classes for the front-end and the back-end, respectively. An SQLite database acts as the middle-tier, providing a sophisticated and optimised layer for data storage and various other operations.
 
  Input  --->  File Importer  ---> Database  --->  File Exporter  ---> Output
  File                                                                  File
@@ -14,6 +14,10 @@ The application uses "importer" and "exporter" classes as the front-end and the 
 `CsvExporter` and `XmlExporter` classes are derived from `FileExporter`. They read the data from the database (with the help of `DBManager` class) and writes into a CSV and XML file, respectively.
 
 == Version History
+* *version 0.8.1 (beta) - (December 2022)*
+** Bug fixes
+** Improved documentation
+
 * *version 0.8 (beta) - (October 2022)*
 ** New GUI layout
 ** Parameter audit functionality added
