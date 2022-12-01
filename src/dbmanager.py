@@ -78,6 +78,7 @@ class DBManager:
     # returns a list of columns names for the table_name
     def get_column_names(self, table_name):
         res = []
+        table_name = "t_" + table_name
         sql = "PRAGMA table_info('" + table_name + "')"
         for c in self.cursor.execute(sql).fetchall():
             res.append(c['name'])
