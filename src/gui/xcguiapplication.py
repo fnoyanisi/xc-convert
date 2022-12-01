@@ -80,7 +80,7 @@ class XcGuiApplication:
         Label(self.left_frame, image=self.img_process).pack(padx=(10,5))
         Label(self.left_frame, text='\nRAN helper utility (v' + self.version + ')',
               font='Helvetica 13 bold').pack(padx=(10,5))
-        Label(self.left_frame, text=('\nFile conversion and RAN audit utility.\n\n'
+        Label(self.left_frame, text=('\nFile conversion and RAN audit tool.\n\n'
                                      'Please see the "Help" section for the license information.')
               , wraplength=200, justify=LEFT).pack(padx=(10,5))
 
