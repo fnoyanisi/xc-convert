@@ -3,6 +3,7 @@ CONTENTS
 1. FILE CONVERSION
     1.1 XML to CSV Conversion
     1.2 CSV to XML Conversion
+    1.3 Complex Data Structures
 2. PARAMETER AUDIT
 
 1 . FILE CONVERSION
@@ -42,6 +43,61 @@ and vice-versa.
 
     From "Select the output directory" dialog, select the the directory
     where the generated CSV file will be written into.
+
+    1.3 Complex Data Structures
+    ---------------------------------------
+    The system generated XML files may contain nested nodes to implement
+    complex data types that are represented as Structures in NetAct GUI.
+    A Structure may contain zero or more nested Structures.
+
+    In the xcc generated CSV files, the header (or the name) of the
+    Structure parameters are appended with "{}".
+
+    The values are written between curly braces, i.e. {....}, and each
+    parameter-value pair is separated from each other with a semi-colon.
+
+    For instance, a Structure such as the one given below in NetAct GUI
+
+    complexParameterType
+    ---------------------
+        |
+        +-- param1 = 1
+        |
+        +-- param2 = 3
+        |
+        +-- param3 = 5
+        |
+        +-- param4 = 7
+        |
+        +-- param5 = 9
+
+    would be named as "complexParameterType{}" in the generated CSV file
+    and the corresponding value would be
+
+    {param1:1;param2:3;param3:5;param4:7;param5:9}
+
+    Likewise, a Structure that contains two other Structures such as the
+    one given below
+
+    complexParameterType2
+    ----------------------
+        |
+        +----------+
+        |          |
+        |          +-- param1 = 2
+        |          |
+        |          +-- param2 = 4
+        |
+        +----------+
+                   |
+                   +-- param1 = 5
+                   |
+                   +-- param2 = 6
+
+    would be named as "complexParameterType2{}" in the generated CSV file
+    and the corresponding value would be
+
+    {{param1:2;param2:4};{param1:5;param2:6}}
 
 2. PARAMETER AUDIT
 ---------------------------------------
