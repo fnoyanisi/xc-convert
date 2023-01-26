@@ -14,6 +14,9 @@ The application uses "importer" and "exporter" classes for the front-end and the
 `CsvExporter` and `XmlExporter` classes are derived from `FileExporter`. They read the data from the database (with the help of `DBManager` class) and writes into a CSV and XML file, respectively.
 
 == Version History
+* *version 0.8.2 (beta) - (January 2023)*
+** Updated xmlimporter for importing SCF files
+
 * *version 0.8.1 (beta) - (December 2022)*
 ** Bug fixes
 ** Improved documentation
