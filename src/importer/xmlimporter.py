@@ -155,6 +155,12 @@ class XmlImporter(FileImporter):
 
         for mo in list_of_managedObjects:
             mo_class = mo.getAttribute("class")
+
+            # default SCF has class="x.y.z:CLASS_NAME" format
+            # extract the useful info, i.e. CLASS_NAME
+            if ":" in mo_class:
+                mo_class = mo_class.split(":")[-1]
+
             if mo_class not in self.mo_parameters:
                 # if this mo_class does not exist, create a new entry in the
                 # dictionary with managedObject class being the key and an
