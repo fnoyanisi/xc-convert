@@ -50,7 +50,14 @@ class XmlImporter(FileImporter):
             # iterate through the managedObject and update DB with the values
             for mo_entry in list_of_managedObjects:
                 values = []
-                if mo_entry.getAttribute("class") == mo_class:
+
+                # refine managedObject class name for SCF entries
+                # which may of the form class="x.y.z:CLASS_NAME"
+                mo_entry_class = mo_entry.getAttribute("class")
+                if ":" in mo_entry_class:
+                    mo_entry_class = mo_entry_class.split(":")[-1]
+
+                if mo_entry_class == mo_class:
                     mo = ManagedObject(mo_class,
                                        mo_entry.getAttribute("version"),
                                        mo_entry.getAttribute("distName"),
@@ -103,10 +110,16 @@ class XmlImporter(FileImporter):
             for mo_entry in list_of_managedObjects:
                 values = []
 
+                # refine managedObject class name for SCF entries
+                # which may of the form class="x.y.z:CLASS_NAME"
+                mo_entry_class = mo_entry.getAttribute("class")
+                if ":" in mo_entry_class:
+                    mo_entry_class = mo_entry_class.split(":")[-1]
+
                 # to ensure each mo class has only one entry
                 # iterated_classes would be empty if unique = False
-                # hence the test below will evaluate to True all the tim
-                if mo_class not in iterated_classes and mo_entry.getAttribute("class") == mo_class:
+                # hence the test below will evaluate to True all the time
+                if mo_class not in iterated_classes and mo_entry_class == mo_class:
                     if unique:
                         iterated_classes.add(mo_class)
 
