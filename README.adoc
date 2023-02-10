@@ -14,6 +14,9 @@ The application uses "importer" and "exporter" classes for the front-end and the
 `CsvExporter` and `XmlExporter` classes are derived from `FileExporter`. They read the data from the database (with the help of `DBManager` class) and writes into a CSV and XML file, respectively.
 
 == Version History
+* *version 0.8.3 (beta) - (February 2023)*
+** Fixed an issue caused by missing table in SQLite DB
+
 * *version 0.8.2 (beta) - (January 2023)*
 ** Updated xmlimporter for importing SCF files
 
