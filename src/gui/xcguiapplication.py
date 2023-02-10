@@ -337,19 +337,21 @@ class XcGuiApplication:
             ref_file_importer.read_into(table_name="reference", unique=True, transpose=True)
             target_file_importer.read_into(table_name="target", unique=False, transpose=True)
 
+            # the table names here should start with 't_' as we are directly sending this query
+            # to the DB as opposed to using one of the helper methods, such as DBManager.create_table()
             sql = """
-            insert into audit_result
+            insert into t_audit_result
             select 
-                target.CLASS as 'CLASS', 
-                reference.DISTNAME as 'REFERENCE_DISTNAME', 
-                target.DISTNAME as 'TARGET_DISTNAME', 
-                target.PARAMETER as 'PARAMETER', 
-                reference.VALUE as 'REFERENCE_VALUE', 
-                target.VALUE as 'TARGET_VALUE'
-            from target 
-                join reference on target.CLASS = reference.CLASS 
-                and target.PARAMETER = reference.PARAMETER 
-                and target.VALUE != reference.VALUE;
+                t_target.CLASS as 'CLASS', 
+                t_reference.DISTNAME as 'REFERENCE_DISTNAME', 
+                t_target.DISTNAME as 'TARGET_DISTNAME', 
+                t_target.PARAMETER as 'PARAMETER', 
+                t_reference.VALUE as 'REFERENCE_VALUE', 
+                t_target.VALUE as 'TARGET_VALUE'
+            from t_target 
+                join t_reference on t_target.CLASS = t_reference.CLASS 
+                and t_target.PARAMETER = t_reference.PARAMETER 
+                and t_target.VALUE != t_reference.VALUE;
             """
 
             dbm.query(sql)
